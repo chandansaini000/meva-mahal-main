@@ -1,0 +1,133 @@
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { Star, ChevronLeft, ChevronRight } from "lucide-react";
+import api from "../api/client.js";
+import ProductCard from "../components/ProductCard.jsx";
+
+const collections = [
+  { name: "Almonds", slug: "almonds", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Almonds.jpg?width=500" },
+  { name: "Pistachios", slug: "pistachios", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Pistachio_Nuts_(Unsplash).jpg?width=500" },
+  { name: "Dates", slug: "dates", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Medjool-Date.jpg?width=500" },
+  { name: "Cashews", slug: "cashews", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Cashew_nuts.JPG?width=500" },
+  { name: "Gift boxes", slug: "gift-boxes", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Gift_box.jpg?width=500" },
+];
+
+export default function Home() {
+  const [featured, setFeatured] = useState([]);
+  const [settings, setSettings] = useState(null);
+  const [slideIndex, setSlideIndex] = useState(0);
+
+  useEffect(() => {
+    api.get("/products?featured=true&limit=8").then(({ data }) => setFeatured(data.products));
+    api.get("/site/settings").then(({ data }) => setSettings(data.settings)).catch(() => setSettings(null));
+  }, []);
+
+  const sliderImages = useMemo(() => {
+    const images = Array.isArray(settings?.slider_images) ? settings.slider_images : [];
+    const fallback = settings?.hero_image ? [settings.hero_image] : [];
+    return images.length ? images : fallback;
+  }, [settings]);
+
+  useEffect(() => {
+    if (sliderImages.length <= 1) return undefined;
+    const timer = setInterval(() => {
+      setSlideIndex((current) => (current + 1) % sliderImages.length);
+    }, 3500);
+    return () => clearInterval(timer);
+  }, [sliderImages]);
+
+  const heroTitle = settings?.hero_title || "The finer half of nature's harvest.";
+  const heroEyebrow = settings?.hero_eyebrow || "Small-batch since 1998";
+  const heroSubtitle = settings?.hero_subtitle || "Hand-picked almonds, pistachios, walnuts, and dates from single-origin orchards, delivered in beautiful, resealable packaging.";
+  const heroPrimaryLabel = settings?.hero_primary_cta || "Shop the harvest";
+  const heroSecondaryLabel = settings?.hero_secondary_cta || "Our story";
+  const heroPrimaryLink = settings?.hero_primary_link || "/shop";
+  const heroSecondaryLink = settings?.hero_secondary_link || "/about";
+  const heroImage = settings?.hero_image || sliderImages[0] || "https://images.unsplash.com/photo-1508061253366-f7da158b6d46?w=900&q=80";
+  const heroBadge = settings?.hero_badge || "Loved by 12,000+ households";
+
+  return (
+    <div>
+      <section className="max-w-7xl mx-auto px-6 pt-6 pb-24 grid lg:grid-cols-2 gap-12 items-center">
+        <div>
+          <p className="uppercase tracking-[0.25em] text-xs text-clay font-medium mb-6">{heroEyebrow}</p>
+          <h1 className="font-display text-6xl leading-[1.05] mb-6">
+            {heroTitle.split("nature's").length === 2 ? (
+              <>
+                {heroTitle.split("nature's")[0]}
+                <span className="text-clay italic">nature's</span>
+                {heroTitle.split("nature's")[1]}
+              </>
+            ) : (
+              heroTitle
+            )}
+          </h1>
+          <p className="text-ink/60 text-lg mb-8 max-w-md">{heroSubtitle}</p>
+          <div className="flex items-center gap-4">
+            <Link to={heroPrimaryLink} className="px-6 py-3 rounded-full bg-ink text-cream font-medium hover:bg-clayDark transition-colors focus-ring">
+              {heroPrimaryLabel}
+            </Link>
+            <Link to={heroSecondaryLink} className="px-6 py-3 rounded-full border border-line font-medium hover:border-clay transition-colors focus-ring">
+              {heroSecondaryLabel}
+            </Link>
+          </div>
+        </div>
+        <div className="relative rounded-xl2 overflow-hidden aspect-[5/4] max-h-[540px]">
+          <img
+            src={sliderImages[slideIndex] || heroImage}
+            alt="Product showcase"
+            className="w-full h-full object-cover"
+          />
+          {sliderImages.length > 1 && (
+            <div className="absolute inset-x-4 top-4 flex items-center justify-between">
+              <button type="button" onClick={() => setSlideIndex((slideIndex - 1 + sliderImages.length) % sliderImages.length)} className="rounded-full bg-white/90 p-2 shadow-sm"><ChevronLeft className="w-4 h-4" /></button>
+              <button type="button" onClick={() => setSlideIndex((slideIndex + 1) % sliderImages.length)} className="rounded-full bg-white/90 p-2 shadow-sm"><ChevronRight className="w-4 h-4" /></button>
+            </div>
+          )}
+          <div className="absolute bottom-6 left-6 right-6 bg-white/90 backdrop-blur rounded-xl p-4 flex items-center gap-3">
+            <div className="flex text-gold">
+              {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="w-4 h-4 fill-gold" />)}
+            </div>
+            <p className="text-sm text-ink/70">{heroBadge}</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="max-w-7xl mx-auto px-6 pb-24">
+        <div className="rounded-xl2 bg-ink text-cream p-8 md:p-12 grid md:grid-cols-[1fr_auto] gap-8 items-center overflow-hidden relative">
+          <div className="relative z-10"><p className="uppercase tracking-[.2em] text-xs text-clay font-medium mb-3">Made for meaningful moments</p><h2 className="font-display text-3xl md:text-4xl">Gift better, without the guesswork.</h2><p className="mt-4 text-cream/70 max-w-xl">From one thoughtful box to hundreds of beautifully branded gifts, we curate, pack and deliver every detail.</p></div>
+          <Link to="/services" className="relative z-10 px-6 py-3 rounded-full bg-cream text-ink font-medium hover:bg-white transition-colors">Explore gifting services</Link>
+          <div className="absolute -right-10 -bottom-24 w-72 h-72 rounded-full bg-clay/30 blur-2xl" />
+        </div>
+      </section>
+
+      <section className="max-w-7xl mx-auto px-6 pb-24">
+        <div className="text-center mb-9">
+          <p className="uppercase tracking-[0.2em] text-xs text-clay font-medium mb-2">Shop by collection</p>
+          <h2 className="font-display text-3xl">A little something for every ritual.</h2>
+        </div>
+        <div className="flex justify-between gap-4 overflow-x-auto pb-2">
+          {collections.map((collection) => <Link key={collection.slug} to={`/shop?category=${collection.slug}`} className="group shrink-0 text-center"><img src={collection.image} alt="" className="w-28 h-28 sm:w-36 sm:h-36 object-cover rounded-full border-4 border-white shadow-sm group-hover:scale-105 transition-transform"/><p className="mt-3 font-medium text-sm">{collection.name}</p></Link>)}
+        </div>
+      </section>
+
+      <section className="max-w-7xl mx-auto px-6 pb-24">
+        <div className="flex items-end justify-between mb-8">
+          <div>
+            <p className="uppercase tracking-[0.2em] text-xs text-clay font-medium mb-2">This week's picks</p>
+            <h2 className="font-display text-3xl">Featured harvest</h2>
+          </div>
+          <Link to="/shop" className="text-sm font-medium hover:text-clay">View all →</Link>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+          {featured.map((p) => (
+            <ProductCard key={p.id} product={p} />
+          ))}
+        </div>
+        {featured.length === 0 && (
+          <p className="text-ink/40 text-sm">No featured products yet — add some from the admin dashboard.</p>
+        )}
+      </section>
+    </div>
+  );
+}

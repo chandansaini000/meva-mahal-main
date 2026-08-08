@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: #D9A441;
+  color: #2B241C;
+}
+
+.focus-ring {
+  outline: none;
+}
+.focus-ring:focus-visible {
+  outline: 2px solid #C87B4A;
+  outline-offset: 2px;
+}
+
+.input {
+  width: 100%;
+  padding: 0.65rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #E4DCC8;
+  background: white;
+  font-size: 0.9rem;
+}
+.input:focus {
+  outline: none;
+  border-color: #C87B4A;
+}

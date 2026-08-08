@@ -1,0 +1,2 @@
+import { Link } from "react-router-dom";
+export default function TrackOrder() { return <main className="max-w-3xl mx-auto px-6 py-16"><h1 className="font-display text-5xl mb-4">Track your order</h1><p className="text-ink/65 leading-relaxed">Sign in to view the current status and full details of every Mevamahal order.</p><Link to="/account" className="inline-block mt-8 px-6 py-3 rounded-full bg-ink text-cream font-medium">View my orders</Link></main>; }

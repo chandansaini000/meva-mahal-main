@@ -1,0 +1,176 @@
+error: null value in column "name" of relation "products" violates not-null constraint
+    at C:\Users\CHANDAN SAINI\OneDrive\Desktop\Zentrix\meva-mahal-main\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///C:/Users/CHANDAN%20SAINI/OneDrive/Desktop/Zentrix/meva-mahal-main/backend/src/routes/products.js:161:22 {
+  length: 312,
+  severity: 'ERROR',
+  code: '23502',
+  detail: 'Failing row contains (64, null, null, null, null, null, null, null, null, null, [], 0.0, 0, f, t, 2026-08-07 14:00:33.563126+05:30).',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'products',
+  column: 'name',
+  dataType: undefined,
+  constraint: undefined,
+  file: 'execMain.c',
+  line: '2219',
+  routine: 'ReportNotNullViolationError'
+}
+error: null value in column "name" of relation "products" violates not-null constraint
+    at C:\Users\CHANDAN SAINI\OneDrive\Desktop\Zentrix\meva-mahal-main\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///C:/Users/CHANDAN%20SAINI/OneDrive/Desktop/Zentrix/meva-mahal-main/backend/src/routes/products.js:161:22 {
+  length: 312,
+  severity: 'ERROR',
+  code: '23502',
+  detail: 'Failing row contains (65, null, null, null, null, null, null, null, null, null, [], 0.0, 0, f, t, 2026-08-07 14:00:41.227854+05:30).',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'products',
+  column: 'name',
+  dataType: undefined,
+  constraint: undefined,
+  file: 'execMain.c',
+  line: '2219',
+  routine: 'ReportNotNullViolationError'
+}
+error: null value in column "name" of relation "products" violates not-null constraint
+    at C:\Users\CHANDAN SAINI\OneDrive\Desktop\Zentrix\meva-mahal-main\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///C:/Users/CHANDAN%20SAINI/OneDrive/Desktop/Zentrix/meva-mahal-main/backend/src/routes/products.js:161:22 {
+  length: 312,
+  severity: 'ERROR',
+  code: '23502',
+  detail: 'Failing row contains (66, null, null, null, null, null, null, null, null, null, [], 0.0, 0, f, t, 2026-08-07 14:00:42.332102+05:30).',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'products',
+  column: 'name',
+  dataType: undefined,
+  constraint: undefined,
+  file: 'execMain.c',
+  line: '2219',
+  routine: 'ReportNotNullViolationError'
+}
+error: null value in column "name" of relation "products" violates not-null constraint
+    at C:\Users\CHANDAN SAINI\OneDrive\Desktop\Zentrix\meva-mahal-main\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///C:/Users/CHANDAN%20SAINI/OneDrive/Desktop/Zentrix/meva-mahal-main/backend/src/routes/products.js:161:22 {
+  length: 312,
+  severity: 'ERROR',
+  code: '23502',
+  detail: 'Failing row contains (67, null, null, null, null, null, null, null, null, null, [], 0.0, 0, f, t, 2026-08-07 14:00:47.362342+05:30).',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'products',
+  column: 'name',
+  dataType: undefined,
+  constraint: undefined,
+  file: 'execMain.c',
+  line: '2219',
+  routine: 'ReportNotNullViolationError'
+}
+error: null value in column "name" of relation "products" violates not-null constraint
+    at C:\Users\CHANDAN SAINI\OneDrive\Desktop\Zentrix\meva-mahal-main\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///C:/Users/CHANDAN%20SAINI/OneDrive/Desktop/Zentrix/meva-mahal-main/backend/src/routes/products.js:161:22 {
+  length: 312,
+  severity: 'ERROR',
+  code: '23502',
+  detail: 'Failing row contains (68, null, null, null, null, null, null, null, null, null, [], 0.0, 0, f, t, 2026-08-07 14:00:55.799887+05:30).',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'products',
+  column: 'name',
+  dataType: undefined,
+  constraint: undefined,
+  file: 'execMain.c',
+  line: '2219',
+  routine: 'ReportNotNullViolationError'
+}
+error: null value in column "name" of relation "products" violates not-null constraint
+    at C:\Users\CHANDAN SAINI\OneDrive\Desktop\Zentrix\meva-mahal-main\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///C:/Users/CHANDAN%20SAINI/OneDrive/Desktop/Zentrix/meva-mahal-main/backend/src/routes/products.js:161:22 {
+  length: 312,
+  severity: 'ERROR',
+  code: '23502',
+  detail: 'Failing row contains (69, null, null, null, null, null, null, null, null, null, [], 0.0, 0, f, t, 2026-08-07 14:00:56.825668+05:30).',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'products',
+  column: 'name',
+  dataType: undefined,
+  constraint: undefined,
+  file: 'execMain.c',
+  line: '2219',
+  routine: 'ReportNotNullViolationError'
+}
+error: null value in column "name" of relation "products" violates not-null constraint
+    at C:\Users\CHANDAN SAINI\OneDrive\Desktop\Zentrix\meva-mahal-main\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///C:/Users/CHANDAN%20SAINI/OneDrive/Desktop/Zentrix/meva-mahal-main/backend/src/routes/products.js:161:22 {
+  length: 311,
+  severity: 'ERROR',
+  code: '23502',
+  detail: 'Failing row contains (70, null, null, null, null, null, null, null, null, null, [], 0.0, 0, f, t, 2026-08-07 15:09:52.79104+05:30).',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'products',
+  column: 'name',
+  dataType: undefined,
+  constraint: undefined,
+  file: 'execMain.c',
+  line: '2219',
+  routine: 'ReportNotNullViolationError'
+}
+error: null value in column "name" of relation "products" violates not-null constraint
+    at C:\Users\CHANDAN SAINI\OneDrive\Desktop\Zentrix\meva-mahal-main\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///C:/Users/CHANDAN%20SAINI/OneDrive/Desktop/Zentrix/meva-mahal-main/backend/src/routes/products.js:161:22 {
+  length: 312,
+  severity: 'ERROR',
+  code: '23502',
+  detail: 'Failing row contains (71, null, null, null, null, null, null, null, null, null, [], 0.0, 0, f, t, 2026-08-07 15:10:50.033202+05:30).',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'products',
+  column: 'name',
+  dataType: undefined,
+  constraint: undefined,
+  file: 'execMain.c',
+  line: '2219',
+  routine: 'ReportNotNullViolationError'
+}
