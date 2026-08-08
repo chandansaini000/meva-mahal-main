@@ -6,7 +6,6 @@ const values = [
   { icon: PackageCheck, title: "Quality assured", text: "Each batch is selected, checked and packed with care." },
   { icon: Leaf, title: "Naturally thoughtful", text: "Wholesome dry fruits for daily rituals and gifting." },
 ];
-
 export default function About() {
   return <main>
     <section className="relative min-h-[390px] grid place-items-center overflow-hidden border-b border-line px-6 py-16">
