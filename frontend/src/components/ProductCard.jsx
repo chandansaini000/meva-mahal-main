@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Heart, Star } from "lucide-react";
 import { useCart } from "../context/CartContext.jsx";
@@ -7,15 +8,24 @@ import api from "../api/client.js";
 export default function ProductCard({ product }) {
   const { addItem } = useCart();
   const { user } = useAuth();
+  const [wishlisted, setWishlisted] = useState(Boolean(product.is_wishlisted));
 
   async function handleWishlist(e) {
     e.preventDefault();
+    e.stopPropagation();
     if (!user) return (window.location.href = "/login");
-    await api.post("/wishlist", { product_id: product.id });
+
+    try {
+      await api.post("/wishlist", { product_id: product.id });
+      setWishlisted((current) => !current);
+    } catch {
+      // Keep existing wishlist flow quiet here.
+    }
   }
 
   async function handleAdd(e) {
     e.preventDefault();
+    e.stopPropagation();
     if (!user) return (window.location.href = "/login");
     await addItem(product.id, 1);
   }
@@ -30,10 +40,11 @@ export default function ProductCard({ product }) {
         />
         <button
           onClick={handleWishlist}
-          className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 flex items-center justify-center focus-ring"
+          className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 flex items-center justify-center focus-ring transition-colors text-ink"
           aria-label="Add to wishlist"
+          type="button"
         >
-          <Heart className="w-4 h-4" />
+          <Heart className={`w-4 h-4 transition-colors ${wishlisted ? "text-red-500 fill-red-500" : "text-ink"}`} />
         </button>
         {product.compare_price > product.price && (
           <span className="absolute top-3 left-3 bg-clay text-white text-[11px] px-2 py-1 rounded-full">Sale</span>
@@ -54,6 +65,7 @@ export default function ProductCard({ product }) {
           </div>
           <button
             onClick={handleAdd}
+            type="button"
             className="text-xs font-medium px-3 py-1.5 rounded-full bg-ink text-cream hover:bg-clayDark transition-colors focus-ring"
           >
             Add

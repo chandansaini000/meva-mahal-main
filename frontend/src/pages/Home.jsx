@@ -16,10 +16,12 @@ export default function Home() {
   const [featured, setFeatured] = useState([]);
   const [settings, setSettings] = useState(null);
   const [slideIndex, setSlideIndex] = useState(0);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     api.get("/products?featured=true&limit=8").then(({ data }) => setFeatured(data.products));
     api.get("/site/settings").then(({ data }) => setSettings(data.settings)).catch(() => setSettings(null));
+    api.get("/products/categories").then(({ data }) => setCategories(data.categories)).catch(() => setCategories([]));
   }, []);
 
   const sliderImages = useMemo(() => {
@@ -107,7 +109,16 @@ export default function Home() {
           <h2 className="font-display text-3xl">A little something for every ritual.</h2>
         </div>
         <div className="flex justify-between gap-4 overflow-x-auto pb-2">
-          {collections.map((collection) => <Link key={collection.slug} to={`/shop?category=${collection.slug}`} className="group shrink-0 text-center"><img src={collection.image} alt="" className="w-28 h-28 sm:w-36 sm:h-36 object-cover rounded-full border-4 border-white shadow-sm group-hover:scale-105 transition-transform"/><p className="mt-3 font-medium text-sm">{collection.name}</p></Link>)}
+          {(categories.length ? categories : collections).map((collection) => (
+            <Link key={collection.slug} to={`/shop?category=${collection.slug}`} className="group shrink-0 text-center">
+              <img
+                src={collection.image_url || collection.image || "https://placehold.co/500x500/F7F3EA/2B241C?text=Cat"}
+                alt={collection.name}
+                className="w-28 h-28 sm:w-36 sm:h-36 object-cover rounded-full border-4 border-white shadow-sm group-hover:scale-105 transition-transform"
+              />
+              <p className="mt-3 font-medium text-sm">{collection.name}</p>
+            </Link>
+          ))}
         </div>
       </section>
 

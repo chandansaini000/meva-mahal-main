@@ -20,8 +20,8 @@ export default function About() {
 
     <section className="max-w-6xl mx-auto px-6 py-16 md:py-20">
       <div className="grid lg:grid-cols-2 gap-10 items-center">
-        <div className="rounded-xl2 overflow-hidden aspect-square bg-line">
-          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Planters-Trail-Mix.jpg?width=1100" alt="A selection of dry fruits and nuts" className="w-full h-full object-cover" />
+        <div className="rounded-x12 overflow-hidden">
+          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Planters-Trail-Mix.jpg?width=1100" alt="A selection of dry fruits and nuts" className="w-[350] h-[350] object-cover border border-line rounded-xl2" />
         </div>
         <article><p className="uppercase tracking-[.2em] text-xs text-clay font-medium mb-3">From orchard to home</p><h2 className="font-display text-4xl">A family in the orchards.</h2><div className="mt-6 space-y-4 text-ink/70 leading-relaxed"><p>Mevamahal began with a love for good ingredients and the small rituals they create. We choose dry fruits for their flavour, texture and freshness—then pack them in small batches so they arrive at their best.</p><p>From everyday handfuls to thoughtful gifts, every order is prepared with the same care we would bring to our own table.</p></div><Link to="/shop" className="inline-flex items-center gap-2 mt-7 px-5 py-3 rounded-full bg-ink text-cream font-medium hover:bg-clayDark">Shop the harvest <span aria-hidden>→</span></Link></article>
       </div>
@@ -33,6 +33,5 @@ export default function About() {
       <div className="grid sm:grid-cols-3 gap-4 mt-4 text-center">{[["1998", "Founded", "A love for better dry fruits."], ["24", "Partner orchards", "Chosen with care, season after season."], ["12k+", "Happy households", "Sharing the good stuff every day."]].map(([number, label, text]) => <div key={label} className="rounded-xl2 border border-line bg-white/55 px-5 py-7"><p className="font-display text-4xl text-gold">{number}</p><p className="font-medium mt-2">{label}</p><p className="text-xs text-ink/55 mt-1">{text}</p></div>)}</div>
     </section>
 
-    <section className="bg-gold/10 border-y border-line"><div className="max-w-6xl mx-auto px-6 py-12 flex flex-col md:flex-row items-center justify-between gap-5 text-center md:text-left"><h2 className="font-display text-3xl">Khao, Khilao,<br /><span className="text-clay">Mevamahal!</span></h2><div className="w-20 h-20 rounded-full bg-ink border-8 border-white shadow-lg grid place-items-center"><span className="w-4 h-4 rounded-full bg-clay" /></div><p className="font-display text-3xl">Made with care,<br /><span className="text-clay">in India.</span></p></div></section>
   </main>;
 }

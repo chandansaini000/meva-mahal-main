@@ -67,12 +67,12 @@ export default function ProductDetail() {
     <div className="max-w-7xl mx-auto px-6 py-12">
       <div className="grid lg:grid-cols-2 gap-14">
         <div className="space-y-4">
-          <div className="w-[300px] h-[300px] mx-auto flex items-center justify-center rounded-xl bg-white border">
-  <img
-    src={activeImage}
-    alt={product.name}
-    className="w-full h-full object-contain"
-  />
+          <div className="w-[300px] h-[300px] mx-auto flex items-center justify-center  bg-white border border-line rounded-xl2">
+            <img
+              src={activeImage}
+              alt={product.name}
+              className="w-full h-full object-contain"
+            />
             {gallery.length > 1 && (
               <div className="absolute inset-x-4 top-4 flex items-center justify-between pointer-events-none">
                 <button
@@ -100,9 +100,8 @@ export default function ProductDetail() {
                   key={`${image}-${index}`}
                   type="button"
                   onClick={() => setSelectedImageIndex(index)}
-                  className={`overflow-hidden rounded-lg border-2 transition-colors ${
-                    selectedImageIndex === index ? "border-clay" : "border-line hover:border-clay/50"
-                  }`}
+                  className={`overflow-hidden rounded-lg border-2 transition-colors ${selectedImageIndex === index ? "border-clay" : "border-line hover:border-clay/50"
+                    }`}
                   aria-label={`View product image ${index + 1}`}
                 >
                   <img src={image} alt={`${product.name} thumbnail ${index + 1}`} className="w-full h-16 sm:h-20 object-contain bg-white/70" />
