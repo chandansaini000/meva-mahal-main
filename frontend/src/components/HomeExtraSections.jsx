@@ -109,43 +109,141 @@ export default function HomeExtraSections() {
       {/* =========================
           CUSTOMER REVIEWS
       ========================== */}
-      <section className="max-w-7xl mx-auto px-5 sm:px-8 pt-16 md:pt-0">
-        <div className="mb-8">
-          <p className="uppercase tracking-[0.25em] text-[10px] sm:text-xs text-gold font-medium mb-3">
-            Kind Words
-          </p>
+     <section className="relative py-16 sm:py-20 bg-[#f7f7f7] overflow-hidden">
 
-          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl">
-            From our customers
-          </h2>
-        </div>
+  {/* Decorative hanging elements */}
+  <div className="absolute top-0 left-[11%] hidden md:block">
+    <div className="flex gap-2">
+      <span className="w-px h-28 bg-black/20" />
+      <span className="w-px h-32 bg-black/20" />
+      <span className="w-px h-36 bg-black/20" />
+    </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {testimonials.map((review) => (
-            <div
-              key={review.name}
-              className="bg-white/80 border border-line rounded-2xl p-6 sm:p-7"
-            >
-              <div className="flex gap-0.5 text-gold mb-4">
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <Star
-                    key={index}
-                    className="w-4 h-4 fill-gold"
-                  />
-                ))}
+    <div className="absolute top-[100px] left-[28px] w-10 h-10 rounded-full bg-[#ddd] shadow-sm" />
+  </div>
+
+  <div className="absolute top-0 right-[11%] hidden md:block">
+    <div className="flex gap-2">
+      <span className="w-px h-36 bg-black/20" />
+      <span className="w-px h-32 bg-black/20" />
+      <span className="w-px h-28 bg-black/20" />
+    </div>
+
+    <div className="absolute top-[100px] right-[28px] w-10 h-10 rounded-full bg-[#ddd] shadow-sm" />
+  </div>
+
+  {/* Section content */}
+  <div className="relative max-w-6xl mx-auto px-5 sm:px-6">
+
+    {/* Heading */}
+    <div className="text-center mb-10 sm:mb-12">
+      <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-medium tracking-tight text-ink">
+        Words From Our Delighted Customers
+      </h2>
+    </div>
+
+    {/* Testimonials */}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+      {testimonials.map((review) => (
+        <div
+          key={review.name}
+          className="
+            relative
+            bg-white
+            rounded-md
+            px-5 sm:px-6
+            py-6
+            shadow-[0_8px_20px_rgba(0,0,0,0.08)]
+            min-h-[205px]
+            overflow-hidden
+          "
+        >
+
+          {/* Large quotation mark */}
+          <span
+            className="
+              absolute
+              top-1
+              left-4
+              text-[58px]
+              leading-none
+              font-serif
+              font-bold
+              text-black/[0.06]
+              pointer-events-none
+            "
+          >
+            “
+          </span>
+
+          <div className="relative z-10">
+
+            {/* Customer name */}
+            <h3 className="text-center font-medium text-base sm:text-lg text-ink mb-5">
+              {review.name}
+            </h3>
+
+            {/* Review content */}
+            <div className="flex gap-5">
+
+              {/* Avatar */}
+              <div className="shrink-0">
+                <div className="w-14 h-14 bg-[#cfcfcf] flex items-center justify-center overflow-hidden">
+                  {review.image ? (
+                    <img
+                      src={review.image}
+                      alt={review.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <svg
+                      viewBox="0 0 64 64"
+                      className="w-12 h-12 text-white"
+                      fill="currentColor"
+                    >
+                      <circle cx="32" cy="21" r="13" />
+                      <path d="M8 58c2-13 11-20 24-20s22 7 24 20H8z" />
+                    </svg>
+                  )}
+                </div>
               </div>
 
-              <p className="font-display text-lg sm:text-xl leading-relaxed text-ink/80">
-                {review.text}
-              </p>
+              {/* Text */}
+              <div className="flex-1 min-w-0">
 
-              <p className="uppercase tracking-[0.14em] text-[10px] text-ink/50 font-medium mt-6">
-                {review.name} · {review.role}
-              </p>
+                <p className="text-sm sm:text-[15px] leading-6 text-ink/60">
+                  <span className="font-bold text-ink/60 mr-1">
+                    “
+                  </span>
+
+                  {review.text}
+
+                  <span className="font-bold text-ink/60 ml-1">
+                    ”
+                  </span>
+                </p>
+
+                {/* Stars */}
+                <div className="flex gap-0.5 mt-4">
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <Star
+                      key={index}
+                      className="w-4 h-4 text-[#ffb400] fill-[#ffb400]"
+                    />
+                  ))}
+                </div>
+
+              </div>
             </div>
-          ))}
+
+          </div>
         </div>
-      </section>
+      ))}
+
+    </div>
+  </div>
+</section>
 
       {/* =========================
           LIVE BETTER
@@ -162,7 +260,7 @@ export default function HomeExtraSections() {
               A handful, every day.
             </h2>
 
-            <p className="text-ink/60 leading-relaxed max-w-xl mb-7">
+            <p className="text-white/60 leading-relaxed max-w-xl mb-7">
               Dry fruits deliver a slow, sustained release of energy—perfect
               between meals, before workouts, or as a mid-afternoon reset.
               Here's how to make them a ritual.
@@ -288,7 +386,7 @@ export default function HomeExtraSections() {
       {/* =========================
           FAQ
       ========================== */}
-      <section className="max-w-7xl mx-auto px-5 sm:px-8 py-20 md:py-28">
+      <section className="max-w-7xl mx-auto px-5 sm:px-8 py-20 md:py-12">
 
         <div className="mb-10 text-center">
           <p className="uppercase tracking-[0.25em] text-[10px] sm:text-xs text-gold font-medium mb-3">

@@ -285,87 +285,115 @@ export default function ProductDetail() {
         <main>
 
           {/* Product image + information */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
 
             {/* ==================================================
                 IMAGE GALLERY
             ================================================== */}
             <div>
+              <div className="w-[350px] max-w-full">
+                {/* Main image */}
+                <div className="relative aspect-square w-full rounded-2xl bg-white overflow-hidden border border-line">
+                  <img
+                    src={activeImage}
+                    alt={product.name}
+                    className="w-full h-full object-contain"
+                  />
 
-              {/* Main image */}
-              <div className="w-[350px] h-[350px] relative aspect-square rounded-2xl bg-white overflow-hidden border border-line">
+                  {/* Previous / Next buttons */}
+                  {gallery.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setSelectedImageIndex(
+                            (current) =>
+                              (current - 1 + gallery.length) % gallery.length
+                          )
+                        }
+                        className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-sm hover:bg-white transition-colors"
+                        aria-label="Previous product image"
+                      >
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
 
-                <img
-                  src={activeImage}
-                  alt={product.name}
-                  className="w-full h-full object-contain"
-                />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setSelectedImageIndex(
+                            (current) => (current + 1) % gallery.length
+                          )
+                        }
+                        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-sm hover:bg-white transition-colors"
+                        aria-label="Next product image"
+                      >
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                    </>
+                  )}
+                </div>
 
-                {/* Previous / Next buttons */}
-                {gallery.length > 1 && (
-                  <>
+                {/* Thumbnails */}
+                {gallery.length > 0 && (
+                  <div className="mt-4 grid grid-cols-4 gap-3 w-full">
+                    {gallery.slice(0, 4).map((image, index) => (
+                      <button
+                        key={`${image}-${index}`}
+                        type="button"
+                        onClick={() => setSelectedImageIndex(index)}
+                        className={`aspect-square overflow-hidden rounded-lg border-2 transition-colors ${
+                          selectedImageIndex === index
+                            ? "border-clay"
+                            : "border-line hover:border-clay/50"
+                        }`}
+                        aria-label={`View product image ${index + 1}`}
+                      >
+                        <img
+                          src={image}
+                          alt={`${product.name} thumbnail ${index + 1}`}
+                          className="h-full w-full object-contain bg-white/70"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* More images indicator */}
+                {gallery.length > 4 && (
+                  <div className="flex items-center justify-between mt-3">
                     <button
                       type="button"
                       onClick={() =>
                         setSelectedImageIndex(
                           (current) =>
-                            (current - 1 + gallery.length) %
-                            gallery.length
+                            (current - 1 + gallery.length) % gallery.length
                         )
                       }
-                      className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-sm hover:bg-white transition-colors"
-                      aria-label="Previous product image"
+                      className="w-8 h-8 rounded-full border border-line bg-white flex items-center justify-center hover:border-clay transition-colors"
+                      aria-label="Previous image"
                     >
-                      <ChevronLeft className="w-5 h-5" />
+                      <ChevronLeft className="w-4 h-4" />
                     </button>
+
+                    <span className="text-xs text-ink/50">
+                      {selectedImageIndex + 1} / {gallery.length}
+                    </span>
 
                     <button
                       type="button"
                       onClick={() =>
                         setSelectedImageIndex(
-                          (current) =>
-                            (current + 1) % gallery.length
+                          (current) => (current + 1) % gallery.length
                         )
                       }
-                      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-sm hover:bg-white transition-colors"
-                      aria-label="Next product image"
+                      className="w-8 h-8 rounded-full border border-line bg-white flex items-center justify-center hover:border-clay transition-colors"
+                      aria-label="Next image"
                     >
-                      <ChevronRight className="w-5 h-5" />
+                      <ChevronRight className="w-4 h-4" />
                     </button>
-                  </>
+                  </div>
                 )}
               </div>
-
-              {/* Thumbnails */}
-              {gallery.length > 1 && (
-                <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 max-w-[450px] mx-auto mt-4">
-                  {gallery.map((image, index) => (
-                    <button
-                      key={`${image}-${index}`}
-                      type="button"
-                      onClick={() =>
-                        setSelectedImageIndex(index)
-                      }
-                      className={`overflow-hidden rounded-lg border-2 transition-colors ${
-                        selectedImageIndex === index
-                          ? "border-clay"
-                          : "border-line hover:border-clay/50"
-                      }`}
-                      aria-label={`View product image ${
-                        index + 1
-                      }`}
-                    >
-                      <img
-                        src={image}
-                        alt={`${product.name} thumbnail ${
-                          index + 1
-                        }`}
-                        className="w-full h-16 sm:h-20 object-contain bg-white/70"
-                      />
-                    </button>
-                  ))}
-                </div>
-              )}
             </div>
 
             {/* ==================================================

@@ -205,6 +205,125 @@ export default function Shop() {
           </button>
         </div>
       )}
+      <section className="w-full px-4 sm:px-6 lg:px-8 py-8">
+  <div className="max-w-7xl mx-auto bg-ink border border-black/10 rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+
+      {/* Premium Quality */}
+      <div className="flex items-center gap-5 px-6 py-6 lg:py-7 border-b sm:border-r lg:border-b-0 border-black/10">
+        <div className="shrink-0 text-white">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-9 h-9"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          >
+            <path d="M12 3l8 4v5c0 4.8-3.4 7.9-8 9-4.6-1.1-8-4.2-8-9V7l8-4z" />
+            <path d="m8.5 12 2.2 2.2 4.8-5" />
+          </svg>
+        </div>
+
+        <div>
+          <h3 className="text-sm font-semibold tracking-wide text-ink uppercase">
+            Premium Quality
+          </h3>
+          <p className="text-sm text-white mt-1">
+            100% Quality Guarantee
+          </p>
+        </div>
+      </div>
+
+      {/* Swift Shipping */}
+      <div className="flex items-center gap-5 px-6 py-6 lg:py-7 border-b lg:border-b-0 lg:border-r border-black/10">
+        <div className="shrink-0 text-white">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-9 h-9"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          >
+            <path d="M3 7h11v10H3z" />
+            <path d="M14 10h4l3 3v4h-7z" />
+            <circle cx="7" cy="19" r="2" />
+            <circle cx="18" cy="19" r="2" />
+            <path d="M5 5v-2M9 5v-2M13 5v-2" />
+          </svg>
+        </div>
+
+        <div>
+          <h3 className="text-sm font-semibold tracking-wide text-ink uppercase">
+            Swift Shipping
+          </h3>
+          <p className="text-sm text-white mt-1">
+            Delivering across India
+          </p>
+        </div>
+      </div>
+
+      {/* Easy Return */}
+      <div className="flex items-center gap-5 px-6 py-6 lg:py-7 border-b sm:border-r lg:border-b-0 border-black/10">
+        <div className="shrink-0 text-white">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-9 h-9"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          >
+            <path d="M4 7h13a3 3 0 0 1 3 3v7H7a3 3 0 0 1-3-3V7z" />
+            <path d="M7 7V5a2 2 0 0 1 2-2h8v4" />
+            <circle cx="8" cy="17" r="2" />
+            <circle cx="17" cy="17" r="2" />
+            <path d="M13 10h4" />
+          </svg>
+        </div>
+
+        <div>
+          <h3 className="text-sm font-semibold tracking-wide text-ink uppercase">
+            Easy Return
+          </h3>
+          <p className="text-sm text-white mt-1">
+            Refer return policy
+          </p>
+        </div>
+      </div>
+
+      {/* 24/7 Support */}
+      <div className="flex items-center gap-5 px-6 py-6 lg:py-7">
+        <div className="shrink-0 text-white">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-9 h-9"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          >
+            <path d="M4 13a8 8 0 0 1 16 0" />
+            <path d="M4 13v4a2 2 0 0 0 2 2h1v-6H4z" />
+            <path d="M20 13v4a2 2 0 0 1-2 2h-1v-6h3z" />
+            <path d="M9 19h4" />
+          </svg>
+        </div>
+
+        <div>
+          <h3 className="text-sm font-semibold tracking-wide text-ink uppercase">
+            24/7 Support
+          </h3>
+          <p className="text-sm text-white mt-1">
+            Support every time
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
     </main>
   );
 }
