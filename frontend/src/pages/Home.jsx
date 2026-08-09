@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 import api from "../api/client.js";
 import ProductCard from "../components/ProductCard.jsx";
+import HomeExtraSections from "../components/HomeExtraSections.jsx";
 
 const collections = [
   { name: "Almonds", slug: "almonds", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Almonds.jpg?width=500" },
@@ -139,6 +140,7 @@ export default function Home() {
           <p className="text-ink/40 text-sm">No featured products yet — add some from the admin dashboard.</p>
         )}
       </section>
+      <HomeExtraSections />
     </div>
   );
 }

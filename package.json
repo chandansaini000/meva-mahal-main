@@ -10,5 +10,9 @@
     "db:init": "npm --prefix backend run db:init",
     "db:seed": "npm --prefix backend run db:seed",
     "admin:create": "npm --prefix backend run admin:create"
+  },
+  "dependencies": {
+    "react-icon": "^1.0.0",
+    "react-icons": "^5.7.0"
   }
 }
