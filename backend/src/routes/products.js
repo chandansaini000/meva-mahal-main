@@ -150,24 +150,25 @@ router.get("/", async (req, res) => {
 
 router.get("/categories", async (req, res) => {
   try {
-    const { rows } = await pool.query(`
-      SELECT *
-      FROM categories
-      ORDER BY name
-    `);
+    console.log("GET /products/categories called");
+
+    const { rows } = await pool.query(
+      "SELECT id, name, slug, image_url FROM categories ORDER BY name"
+    );
+
+    console.log("Categories:", rows);
 
     res.json({
       categories: rows,
     });
   } catch (err) {
-    console.error("Category list error:", err);
+    console.error("CATEGORY ERROR:", err);
 
     res.status(500).json({
       error: "Could not fetch categories",
     });
   }
 });
-
 /* =========================================================
    ADMIN: CREATE CATEGORY WITH IMAGE
 ========================================================= */

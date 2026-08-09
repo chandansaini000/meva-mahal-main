@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Search, SlidersHorizontal } from "lucide-react";
 import api from "../api/client.js";
 import ProductCard from "../components/ProductCard.jsx";
@@ -6,12 +7,204 @@ import ProductCard from "../components/ProductCard.jsx";
 const quickFilters = ["Best seller", "New arrival", "On sale", "In stock", "Featured"];
 
 export default function Shop() {
-  const [products, setProducts] = useState([]); const [categories, setCategories] = useState([]); const [loading, setLoading] = useState(true);
-  const [query, setQuery] = useState(""); const [category, setCategory] = useState(""); const [sort, setSort] = useState("newest"); const [price, setPrice] = useState(""); const [quick, setQuick] = useState("");
-  useEffect(() => { api.get("/products/categories").then(({ data }) => setCategories(data.categories)).catch(() => setCategories([])); }, []);
-  useEffect(() => { setLoading(true); const params = { q: query, category, sort, limit: 100, featured: quick === "Featured" ? "true" : undefined }; if (price === "under-500") params.maxPrice = 500; if (price === "500-1000") { params.minPrice = 500; params.maxPrice = 1000; } if (price === "over-1000") params.minPrice = 1000; api.get("/products", { params }).then(({ data }) => setProducts(data.products)).catch(() => setProducts([])).finally(() => setLoading(false)); }, [query, category, sort, price, quick]);
-  const shown = useMemo(() => products.filter(product => { if (quick === "On sale") return Number(product.compare_price) > Number(product.price); if (quick === "In stock") return product.stock > 0; return true; }), [products, quick]);
-  function toggleQuick(label) { const next = quick === label ? "" : label; setQuick(next); if (next === "Best seller") setSort("rating"); if (next === "New arrival") setSort("newest"); }
-  return <main className="max-w-7xl mx-auto px-6 py-12 md:py-16"><div><p className="uppercase tracking-[.2em] text-xs text-clay font-medium">The pantry edit</p><h1 className="font-display text-5xl mt-3">Premium Dry Fruits</h1><p className="text-sm text-ink/55 mt-4">Showing {shown.length} product{shown.length !== 1 ? "s" : ""}</p></div><section className="mt-7 rounded-xl2 border border-line bg-white/70 p-3 shadow-sm"><div className="grid lg:grid-cols-[1.7fr_.7fr_.7fr_.7fr_auto] gap-3"><label className="relative"><Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ink/40"/><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search products…" className="input pl-10 h-full"/></label><select value={category} onChange={event => setCategory(event.target.value)} className="input"><option value="">All categories</option>{categories.map(item => <option value={item.slug} key={item.id}>{item.name}</option>)}</select><select value={sort} onChange={event => setSort(event.target.value)} className="input"><option value="newest">Latest</option><option value="price_asc">Price: low to high</option><option value="price_desc">Price: high to low</option><option value="rating">Top rated</option></select><select value={price} onChange={event => setPrice(event.target.value)} className="input"><option value="">All prices</option><option value="under-500">Under ₹500</option><option value="500-1000">₹500 – ₹1,000</option><option value="over-1000">Over ₹1,000</option></select><button onClick={() => { setQuery(""); setCategory(""); setSort("newest"); setPrice(""); setQuick(""); }} className="px-5 py-3 rounded-full bg-ink text-cream text-sm font-medium hover:bg-clayDark">Reset</button></div></section><div className="flex flex-wrap gap-2 mt-5">{quickFilters.map(label => <button key={label} onClick={() => toggleQuick(label)} className={`px-4 py-2 border rounded-full text-sm transition-colors ${quick === label ? "bg-ink text-cream border-ink" : "border-line bg-white/50 hover:border-clay"}`}>{label}</button>)}</div>
-  <div className="flex items-center gap-2 mt-10 mb-5 text-sm text-ink/50"><SlidersHorizontal className="w-4 h-4"/> Curated for your pantry</div>{loading ? <p className="text-ink/45 py-16">Loading the harvest…</p> : shown.length ? <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">{shown.map(product => <ProductCard key={product.id} product={product}/>)}</div> : <div className="rounded-xl2 border border-line text-center py-16"><p className="font-display text-2xl">Nothing matched that search.</p><button onClick={() => { setQuery(""); setCategory(""); setPrice(""); setQuick(""); }} className="text-clay underline mt-3">Clear filters</button></div>}</main>;
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState(searchParams.get("category") || "");
+  const [sort, setSort] = useState("newest");
+  const [price, setPrice] = useState("");
+  const [quick, setQuick] = useState("");
+
+  useEffect(() => {
+    api
+      .get("/products/categories")
+      .then(({ data }) => setCategories(data.categories))
+      .catch(() => setCategories([]));
+  }, []);
+
+  useEffect(() => {
+    const selectedCategory = searchParams.get("category") || "";
+    setCategory(selectedCategory);
+  }, [searchParams]);
+
+  useEffect(() => {
+    setLoading(true);
+
+    const params = {
+      q: query,
+      category,
+      sort,
+      limit: 100,
+      featured: quick === "Featured" ? "true" : undefined,
+    };
+
+    if (price === "under-500") params.maxPrice = 500;
+    if (price === "500-1000") {
+      params.minPrice = 500;
+      params.maxPrice = 1000;
+    }
+    if (price === "over-1000") params.minPrice = 1000;
+
+    api
+      .get("/products", { params })
+      .then(({ data }) => setProducts(data.products))
+      .catch(() => setProducts([]))
+      .finally(() => setLoading(false));
+  }, [query, category, sort, price, quick]);
+
+  const shown = useMemo(
+    () =>
+      products.filter((product) => {
+        if (quick === "On sale") return Number(product.compare_price) > Number(product.price);
+        if (quick === "In stock") return product.stock > 0;
+        return true;
+      }),
+    [products, quick]
+  );
+
+  function toggleQuick(label) {
+    const next = quick === label ? "" : label;
+    setQuick(next);
+
+    if (next === "Best seller") setSort("rating");
+    if (next === "New arrival") setSort("newest");
+  }
+
+  function updateCategoryFromUrl(selectedCategory) {
+    const nextParams = new URLSearchParams(searchParams);
+
+    if (selectedCategory) {
+      nextParams.set("category", selectedCategory);
+    } else {
+      nextParams.delete("category");
+    }
+
+    setSearchParams(nextParams);
+  }
+
+  function handleCategoryInput(event) {
+    const selected = event.target.value;
+    setCategory(selected);
+    updateCategoryFromUrl(selected);
+  }
+
+  function clearFilters() {
+    setQuery("");
+    setSort("newest");
+    setPrice("");
+    setQuick("");
+    setCategory("");
+
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete("category");
+    setSearchParams(nextParams);
+  }
+
+  return (
+    <main className="max-w-7xl mx-auto px-6 py-12 md:py-16">
+      <div>
+        <p className="uppercase tracking-[0.2em] text-xs text-clay font-medium">The pantry edit</p>
+        <h1 className="font-display text-5xl mt-3">Premium Dry Fruits</h1>
+        <p className="text-sm text-ink/55 mt-4">
+          {category
+            ? `Category: ${categories.find((item) => item.slug === category)?.name || category}`
+            : "All products"}
+        </p>
+        <p className="text-sm text-ink/55 mt-1">
+          Showing {shown.length} product{shown.length !== 1 ? "s" : ""}
+          {category ? (
+            <button
+              type="button"
+              onClick={() => updateCategoryFromUrl("")}
+              className="ml-4 text-sm text-clay underline"
+            >
+              All Products
+            </button>
+          ) : null}
+        </p>
+      </div>
+
+      <section className="mt-7 rounded-xl2 border border-line bg-white/70 p-3 shadow-sm">
+        <div className="grid lg:grid-cols-[1.7fr_.7fr_.7fr_.7fr_auto] gap-3">
+          <label className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ink/40" />
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search products…"
+              className="input pl-10 h-full"
+            />
+          </label>
+
+          <select value={category} onChange={handleCategoryInput} className="input">
+            <option value="">All categories</option>
+            {categories.map((item) => (
+              <option value={item.slug} key={item.id}>
+                {item.name}
+              </option>
+            ))}
+          </select>
+
+          <select value={sort} onChange={(event) => setSort(event.target.value)} className="input">
+            <option value="newest">Latest</option>
+            <option value="price_asc">Price: low to high</option>
+            <option value="price_desc">Price: high to low</option>
+            <option value="rating">Top rated</option>
+          </select>
+
+          <select value={price} onChange={(event) => setPrice(event.target.value)} className="input">
+            <option value="">All prices</option>
+            <option value="under-500">Under 500</option>
+            <option value="500-1000">500 – 1,000</option>
+            <option value="over-1000">Over 1,000</option>
+          </select>
+
+          <button
+            onClick={clearFilters}
+            className="px-5 py-3 rounded-full bg-ink text-cream text-sm font-medium hover:bg-clayDark"
+          >
+            Reset
+          </button>
+        </div>
+      </section>
+
+      <div className="flex flex-wrap gap-2 mt-5">
+        {quickFilters.map((label) => (
+          <button
+            key={label}
+            onClick={() => toggleQuick(label)}
+            className={`px-4 py-2 border rounded-full text-sm transition-colors ${
+              quick === label ? "bg-ink text-cream border-ink" : "border-line bg-white/50 hover:border-clay"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      <div className="flex items-center gap-2 mt-10 mb-5 text-sm text-ink/50">
+        <SlidersHorizontal className="w-4 h-4" /> Curated for your pantry
+      </div>
+
+      {loading ? (
+        <p className="text-ink/45 py-16">Loading the harvest…</p>
+      ) : shown.length ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+          {shown.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      ) : (
+        <div className="rounded-xl2 border border-line text-center py-16">
+          <p className="font-display text-2xl">Nothing matched that search.</p>
+          <button onClick={clearFilters} className="text-clay underline mt-3">
+            Clear filters
+          </button>
+        </div>
+      )}
+    </main>
+  );
 }
