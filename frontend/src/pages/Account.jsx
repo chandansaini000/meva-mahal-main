@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { User, Package, MapPin, LogOut, LayoutDashboard } from "lucide-react";
 import api from "../api/client.js";
 import { useAuth } from "../context/AuthContext.jsx";
+import ReviewPopup from "../components/ReviewPopup.jsx";
 
 const TABS = [
   { id: "profile", label: "Profile", icon: User },
@@ -24,10 +25,24 @@ export default function Account() {
     pincode: user?.pincode || "",
   });
   const [saved, setSaved] = useState(false);
+  const [reviewItems, setReviewItems] = useState(location.state?.orderReviewItems || null);
+  const [reviewStage, setReviewStage] = useState(location.state?.orderReviewItems ? 1 : 2);
 
   useEffect(() => {
     if (tab === "orders") api.get("/orders/my").then(({ data }) => setOrders(data.orders));
   }, [tab]);
+
+  useEffect(() => {
+    if (location.state?.orderReviewItems) return;
+    api.get("/reviews/pending").then(({ data }) => {
+      if (data.reviews?.length) { setReviewItems(data.reviews); setReviewStage(2); }
+    }).catch(() => {});
+  }, [location.state]);
+
+  function closeReviews() {
+    setReviewItems(null);
+    if (location.state?.orderReviewItems) window.history.replaceState({}, "", "/account");
+  }
 
   async function handleSave(e) {
     e.preventDefault();
@@ -39,6 +54,7 @@ export default function Account() {
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-12 grid lg:grid-cols-4 gap-10">
+      {reviewItems?.length > 0 && <ReviewPopup items={reviewItems} stage={reviewStage} onDone={closeReviews} />}
       <aside className="lg:col-span-1">
         <div className="flex items-center gap-3 mb-8">
           <img

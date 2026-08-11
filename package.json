@@ -12,6 +12,7 @@
     "admin:create": "npm --prefix backend run admin:create"
   },
   "dependencies": {
+    "cors": "^2.8.6",
     "react-icon": "^1.0.0",
     "react-icons": "^5.7.0"
   }

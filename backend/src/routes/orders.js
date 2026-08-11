@@ -48,6 +48,11 @@ router.post("/", requireAuth, async (req, res) => {
     await client.query("DELETE FROM cart_items WHERE user_id = $1", [req.user.id]);
     await client.query("COMMIT");
 
+    const items = await client.query(
+      `SELECT oi.*, p.image_url FROM order_items oi LEFT JOIN products p ON p.id = oi.product_id WHERE oi.order_id = $1 ORDER BY oi.id`,
+      [order.id]
+    );
+    order.items = items.rows;
     res.status(201).json({ order });
   } catch (err) {
     await client.query("ROLLBACK");

@@ -14,6 +14,33 @@ import { useCart } from "../context/CartContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import ProductCard from "../components/ProductCard.jsx";
 
+function ReviewStars({ rating, interactive = false, value, onChange }) {
+  return (
+    <div className="flex gap-0.5 text-[#ffb400]" role={interactive ? "radiogroup" : undefined} aria-label={interactive ? "Choose a rating" : `${rating} out of 5 stars`}>
+      {Array.from({ length: 5 }).map((_, index) => {
+        const star = index + 1;
+        return interactive ? (
+          <button key={star} type="button" onClick={() => onChange(star)} className="p-0.5" aria-label={`${star} star${star > 1 ? "s" : ""}`}>
+            <Star className={`w-5 h-5 ${star <= value ? "fill-[#ffb400]" : ""}`} />
+          </button>
+        ) : <Star key={star} className={`w-4 h-4 ${star <= Number(rating) ? "fill-[#ffb400]" : ""}`} />;
+      })}
+    </div>
+  );
+}
+
+function ReviewAvatar({ review }) {
+  return (
+    <div className="w-14 h-14 bg-[#cfcfcf] flex items-center justify-center overflow-hidden">
+      {review.avatar_url ? <img src={review.avatar_url} alt={review.user_name} className="w-full h-full object-cover" /> : (
+        <svg viewBox="0 0 64 64" className="w-12 h-12 text-white" fill="currentColor" aria-hidden="true">
+          <circle cx="32" cy="21" r="13" /><path d="M8 58c2-13 11-20 24-20s22 7 24 20H8z" />
+        </svg>
+      )}
+    </div>
+  );
+}
+
 function asImageArray(product) {
   const images = Array.isArray(product?.images) ? product.images : [];
   const fallback = product?.image_url ? [product.image_url] : [];
@@ -532,55 +559,75 @@ export default function ProductDetail() {
                 </button>
               </div>
 
-              {/* ==================================================
-                  REVIEWS
-              ================================================== */}
-              <div className="mt-14">
+            </div>
+          </div>
 
-                <h3 className="font-display text-xl mb-4">
-                  Reviews
-                </h3>
+          {/* Homepage-style product reviews */}
+          {reviews.length === 0 ? (
+  <p className="text-center text-ink/50">
+    No reviews yet. Be the first to share your experience.
+  </p>
+) : (
+  <div className="relative py-4 overflow-hidden">
+    <div className="text-center mb-10 sm:mb-12">
+      <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-medium tracking-tight text-ink">
+        Words From Our Delighted Customers
+      </h2>
+    </div>
+    <div className="flex w-max gap-6 animate-review-slide">
+      {[...reviews, ...reviews].map((review, index) => (
+        <article
+          key={`${review.id}-${index}`}
+          className="relative bg-white rounded-md px-5 sm:px-6 py-6 shadow-[0_8px_20px_rgba(0,0,0,0.08)] min-h-[205px] w-[320px] sm:w-[360px] shrink-0 overflow-hidden"
+        >
+          <span className="absolute top-1 left-4 text-[58px] leading-none font-serif font-bold text-black/[0.06] pointer-events-none">
+            &ldquo;
+          </span>
 
-                {reviews.length === 0 && (
-                  <p className="text-ink/40 text-sm">
-                    No reviews yet.
-                  </p>
-                )}
+          <div className="relative z-10">
+            <h3 className="text-center font-medium text-base sm:text-lg text-ink mb-5">
+              {review.user_name || "Customer"}
+            </h3>
 
-                <div className="space-y-4">
-                  {reviews.map((review) => (
-                    <div
-                      key={review.id}
-                      className="border-b border-line pb-4"
-                    >
-                      <div className="flex items-center gap-2 mb-1">
+            <div className="flex gap-5">
+              <div className="shrink-0">
+                <ReviewAvatar review={review} />
+              </div>
 
-                        <span className="font-medium text-sm">
-                          {review.user_name}
-                        </span>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm sm:text-[15px] leading-6 text-ink/60">
+                  <span className="font-bold text-ink/60 mr-1">
+                    &ldquo;
+                  </span>
 
-                        <div className="flex text-gold">
-                          {Array.from({
-                            length: Number(review.rating) || 0,
-                          }).map((_, i) => (
-                            <Star
-                              key={i}
-                              className="w-3 h-3 fill-gold"
-                            />
-                          ))}
-                        </div>
+                  {review.comment}
 
-                      </div>
+                  <span className="font-bold text-ink/60 ml-1">
+                    &rdquo;
+                  </span>
+                </p>
 
-                      <p className="text-sm text-ink/60">
-                        {review.comment}
-                      </p>
-                    </div>
-                  ))}
+                <ReviewStars rating={review.rating} />
+
+                <div className="flex flex-wrap gap-x-2 gap-y-1 mt-2 text-xs text-ink/45">
+                  {review.verified_purchase && (
+                    <span>Verified Purchase</span>
+                  )}
+
+                  {review.created_at && (
+                    <time dateTime={review.created_at}>
+                      {new Date(review.created_at).toLocaleDateString()}
+                    </time>
+                  )}
                 </div>
               </div>
             </div>
           </div>
+        </article>
+      ))}
+    </div>
+  </div>
+)}
 
           {/* ==================================================
               RELATED PRODUCTS

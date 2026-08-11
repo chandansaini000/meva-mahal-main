@@ -18,13 +18,64 @@ export default function Home() {
   const [settings, setSettings] = useState(null);
   const [slideIndex, setSlideIndex] = useState(0);
   const [categories, setCategories] = useState([]);
-
+    const [reviews, setReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
+const [reviewsError, setReviewsError] = useState("");
   useEffect(() => {
     api.get("/products?featured=true&limit=8").then(({ data }) => setFeatured(data.products));
     api.get("/site/settings").then(({ data }) => setSettings(data.settings)).catch(() => setSettings(null));
     api.get("/products/categories").then(({ data }) => setCategories(data.categories)).catch(() => setCategories([]));
   }, []);
 
+useEffect(() => {
+  let mounted = true;
+
+  const loadReviews = async () => {
+    try {
+      setReviewsLoading(true);
+      setReviewsError("");
+
+      const { data } = await api.get("/products/reviews");
+
+      if (!mounted) return;
+
+      const incomingReviews = Array.isArray(data?.reviews)
+        ? data.reviews
+        : [];
+
+      // Remove duplicate reviews by ID
+      const uniqueReviews = Array.from(
+        new Map(
+          incomingReviews
+            .filter((review) => review?.id != null)
+            .map((review) => [review.id, review])
+        ).values()
+      );
+
+      setReviews(uniqueReviews);
+    } catch (error) {
+      console.error(
+        "Failed to load reviews:",
+        error?.response?.data || error
+      );
+
+      if (mounted) {
+        setReviews([]);
+        setReviewsError("Unable to load customer reviews.");
+      }
+    } finally {
+      if (mounted) {
+        setReviewsLoading(false);
+      }
+    }
+  };
+
+  loadReviews();
+
+  return () => {
+    mounted = false;
+  };
+}, []);
   const sliderImages = useMemo(() => {
     const images = Array.isArray(settings?.slider_images) ? settings.slider_images : [];
     const fallback = settings?.hero_image ? [settings.hero_image] : [];
@@ -139,6 +190,138 @@ export default function Home() {
         {featured.length === 0 && (
           <p className="text-ink/40 text-sm">No featured products yet — add some from the admin dashboard.</p>
         )}
+      </section>
+      <section className="relative py-16 sm:py-20 bg-[#f7f7f7] overflow-hidden">
+
+        {/* Decorative hanging elements */}
+        <div className="absolute top-0 left-[11%] hidden md:block">
+          <div className="flex gap-2">
+            <span className="w-px h-28 bg-black/20" />
+            <span className="w-px h-32 bg-black/20" />
+            <span className="w-px h-36 bg-black/20" />
+          </div>
+          <div className="absolute top-[100px] left-[28px] w-10 h-10 rounded-full bg-[#ddd] shadow-sm" />
+        </div>
+        <div className="absolute top-0 right-[11%] hidden md:block">
+          <div className="flex gap-2">
+            <span className="w-px h-36 bg-black/20" />
+            <span className="w-px h-32 bg-black/20" />
+            <span className="w-px h-28 bg-black/20" />
+          </div>
+          <div className="absolute top-[100px] right-[28px] w-10 h-10 rounded-full bg-[#ddd] shadow-sm" />
+        </div>
+
+        {/* Content */}
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-6">
+          {/* Heading */}
+          <div className="text-center mb-10 sm:mb-12">
+            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-medium tracking-tight text-ink">
+              Words From Our Delighted Customers
+            </h2>
+          </div>
+          {/* Reviews */}
+         {reviewsLoading ? (
+
+<p className="text-center text-ink/50"> Loading customer reviews… </p> ) : reviewsError ? ( <p className="text-center text-ink/50"> {reviewsError} </p> ) : reviews.length > 0 ? ( <div className="relative overflow-hidden"> <div className="flex w-max gap-6 animate-review-slide"> {reviews.map((review) => ( <article key={review.id} className=" relative bg-white rounded-md px-5 sm:px-6 py-6 shadow-[0_8px_20px_rgba(0,0,0,0.08)] min-h-[205px] w-[320px] sm:w-[360px] shrink-0 overflow-hidden " > {/* Large quote */} <span className=" absolute top-1 left-4 text-[58px] leading-none font-serif font-bold text-black/[0.06] pointer-events-none " > “ </span>
+
+      <div className="relative z-10">
+
+        {/* Customer name */}
+        <h3 className="text-center font-medium text-base sm:text-lg text-ink mb-5">
+          {review.user_name || "Customer"}
+        </h3>
+
+        <div className="flex gap-5">
+
+          {/* Avatar */}
+          <div className="shrink-0">
+            <div className="w-14 h-14 bg-[#cfcfcf] flex items-center justify-center overflow-hidden">
+              {review.avatar_url ? (
+                <img
+                  src={review.avatar_url}
+                  alt={review.user_name || "Customer"}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <svg
+                  viewBox="0 0 64 64"
+                  className="w-12 h-12 text-white"
+                  fill="currentColor"
+                >
+                  <circle
+                    cx="32"
+                    cy="21"
+                    r="13"
+                  />
+
+                  <path d="M8 58c2-13 11-20 24-20s22 7 24 20H8z" />
+                </svg>
+              )}
+            </div>
+          </div>
+
+          {/* Review */}
+          <div className="flex-1 min-w-0">
+
+            <p className="text-sm sm:text-[15px] leading-6 text-ink/60">
+              <span className="font-bold text-ink/60 mr-1">
+                “
+              </span>
+
+              {review.comment}
+
+              <span className="font-bold text-ink/60 ml-1">
+                ”
+              </span>
+            </p>
+
+            {/* Stars */}
+            <div className="flex gap-0.5 mt-4">
+              {Array.from({ length: 5 }).map((_, starIndex) => (
+                <Star
+                  key={starIndex}
+                  className={`w-4 h-4 ${
+                    starIndex < Number(review.rating)
+                      ? "text-[#ffb400] fill-[#ffb400]"
+                      : "text-black/10"
+                  }`}
+                />
+              ))}
+            </div>
+
+            {/* Verified + Date */}
+            <div className="flex flex-wrap items-center gap-2 mt-2 text-[11px] text-ink/40">
+
+              {review.verified_purchase && (
+                <span>
+                  Verified Purchase
+                </span>
+              )}
+
+              {review.created_at && (
+                <time dateTime={review.created_at}>
+                  {new Date(
+                    review.created_at
+                  ).toLocaleDateString()}
+                </time>
+              )}
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </article>
+  ))}
+</div>
+            </div>
+          ) : (
+            <p className="text-center text-ink/50">
+              No reviews yet. Be the first to share your experience.
+            </p>
+          )}
+
+        </div>
       </section>
       <HomeExtraSections />
     </div>

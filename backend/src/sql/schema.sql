@@ -94,10 +94,17 @@ CREATE TABLE IF NOT EXISTS reviews (
   id          SERIAL PRIMARY KEY,
   product_id  INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
   user_id     INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  order_id    INTEGER REFERENCES orders(id) ON DELETE SET NULL,
   rating      SMALLINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
   comment     TEXT,
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+ALTER TABLE reviews ADD COLUMN IF NOT EXISTS order_id INTEGER REFERENCES orders(id) ON DELETE SET NULL;
+DROP INDEX IF EXISTS reviews_product_user_unique;
+CREATE UNIQUE INDEX IF NOT EXISTS reviews_user_order_product_unique ON reviews (user_id, order_id, product_id);
+CREATE INDEX IF NOT EXISTS reviews_user_pending_idx ON reviews (user_id, order_id, product_id);
+CREATE INDEX IF NOT EXISTS reviews_product_created_idx ON reviews (product_id, created_at DESC);
 
 CREATE TABLE IF NOT EXISTS newsletter_subscribers (
   id SERIAL PRIMARY KEY,

@@ -35,3 +35,20 @@ body {
   outline: none;
   border-color: #C87B4A;
 }
+@keyframes review-slide {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-review-slide {
+  animation: review-slide 30s linear infinite;
+}
+
+.animate-review-slide:hover {
+  animation-play-state: paused;
+}

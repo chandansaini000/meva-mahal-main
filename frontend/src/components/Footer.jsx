@@ -13,7 +13,7 @@ const groups = [
 export default function Footer() {
   const [email, setEmail] = useState(""); const [message, setMessage] = useState("");
   async function subscribe(event) { event.preventDefault(); setMessage(""); try { await api.post("/site/newsletter", { email }); setEmail(""); setMessage("You’re on the list."); } catch (error) { setMessage(error.response?.data?.error || "Please try again shortly."); } }
-  return <footer className="mt-20 text-cream"><div className="bg-gold/10 border-t border-line"><div className="max-w-7xl mx-auto px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-5 text-center md:text-left"><h2 className="font-display text-3xl text-ink">Kholo, Khao,<br /><span className="text-clay">Mevamahal!</span></h2><div className="w-20 h-20 rounded-full border-8 border-white shadow-lg overflow-hidden">
+  return <footer className="mt-2 text-cream"><div className="bg-gold/10 border-t border-line"><div className="max-w-7xl mx-auto px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-5 text-center md:text-left"><h2 className="font-display text-3xl text-ink">Kholo, Khao,<br /><span className="text-clay">Mevamahal!</span></h2><div className="w-20 h-20 rounded-full border-8 border-white shadow-lg overflow-hidden">
   <img
     src="/assets/mevamahal-logo.jpeg"
     alt="Meva Mahal"

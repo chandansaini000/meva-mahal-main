@@ -367,6 +367,37 @@ router.post(
 );
 
 /* =========================================================
+PUBLIC: ALL REVIEWS FOR HOMEPAGE
+========================================================= */
+
+router.get("/reviews", async (req, res) => {
+  try {
+    const { rows } = await pool.query(`
+      SELECT
+        r.*,
+        u.name AS user_name,
+        u.avatar_url,
+        TRUE AS verified_purchase
+      FROM reviews r
+      JOIN users u
+        ON u.id = r.user_id
+      ORDER BY r.created_at DESC
+    `);
+
+    res.json({
+      reviews: rows,
+    });
+  } catch (err) {
+    console.error("Reviews list error:", err);
+
+    res.status(500).json({
+      error: "Could not fetch reviews",
+    });
+  }
+});
+
+
+/* =========================================================
    PUBLIC: SINGLE PRODUCT BY SLUG
 ========================================================= */
 
@@ -398,7 +429,9 @@ router.get("/:slug", async (req, res) => {
       `
         SELECT
           r.*,
-          u.name AS user_name
+          u.name AS user_name,
+          u.avatar_url,
+          TRUE AS verified_purchase
         FROM reviews r
         JOIN users u
           ON u.id = r.user_id
