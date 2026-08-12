@@ -1,4 +1,4 @@
-import { Star, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import {
   FaAward,
   FaGift,
@@ -6,8 +6,7 @@ import {
   FaTruck,
   FaStar,
 } from "react-icons/fa";
-import { useEffect, useState } from "react";
-import api from "../api/client.js";
+import { useState } from "react";
 
 const faqs = [
   "How fresh are your dry fruits?",
@@ -86,34 +85,8 @@ export default function HomeExtraSections() {
     },
   ];
 
-  useEffect(() => {
-    let mounted = true;
-
-    api.get("/reviews")
-      .then(({ data }) => {
-        if (!mounted) return;
-        setReviews(Array.isArray(data?.reviews) ? data.reviews : []);
-        setReviewsError("");
-      })
-      .catch((error) => {
-        console.error("Could not fetch customer reviews:", error);
-        if (mounted) {
-          setReviews([]);
-          setReviewsError("Customer reviews could not be loaded right now.");
-        }
-      })
-      .finally(() => {
-        if (mounted) setReviewsLoading(false);
-      });
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
   return (
     <section className="bg-cream text-ink">
-
 
       {/* =====================================================
           LIVE BETTER
@@ -286,9 +259,7 @@ export default function HomeExtraSections() {
                 <button
                   type="button"
                   onClick={() =>
-                    setOpenFaq(
-                      isOpen ? null : index
-                    )
+                    setOpenFaq(isOpen ? null : index)
                   }
                   className="
                     w-full
@@ -314,9 +285,11 @@ export default function HomeExtraSections() {
                         font-medium
                         transition-colors
                         duration-300
-                        ${isOpen
-                          ? "text-gold"
-                          : "text-ink/30"}
+                        ${
+                          isOpen
+                            ? "text-gold"
+                            : "text-ink/30"
+                        }
                       `}
                     >
                       0{index + 1}
@@ -329,9 +302,11 @@ export default function HomeExtraSections() {
                         sm:text-lg
                         transition-colors
                         duration-300
-                        ${isOpen
-                          ? "text-clayDark"
-                          : "text-ink/80"}
+                        ${
+                          isOpen
+                            ? "text-clayDark"
+                            : "text-ink/80"
+                        }
                       `}
                     >
                       {question}
