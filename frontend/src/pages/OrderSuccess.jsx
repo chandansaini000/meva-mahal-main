@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { CheckCircle2 } from "lucide-react";
 import api from "../api/client.js";
+import ReviewPopup from "../components/ReviewPopup.jsx";
 
 function formatCurrency(value) {
   return `₹${Number(value || 0).toLocaleString("en-IN", {
@@ -21,9 +22,11 @@ function formatDate(value) {
 
 export default function OrderSuccess() {
   const { orderId } = useParams();
+  const location = useLocation();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [state, setState] = useState("loading");
+  const [reviewItems, setReviewItems] = useState(location.state?.orderReviewItems || null);
 
   const orderLabel = useMemo(() => `Order #${orderId}`, [orderId]);
 
@@ -60,6 +63,13 @@ console.log("Order API response:", data);
       mounted = false;
     };
   }, [orderId]);
+
+  function closeReviews() {
+    setReviewItems(null);
+    if (location.state?.orderReviewItems) {
+      window.history.replaceState({}, "", `/order-success/${orderId}`);
+    }
+  }
 
   if (loading) {
     return (
@@ -123,6 +133,9 @@ console.log("Order API response:", data);
   return (
     <div className="min-h-[78vh] flex items-center justify-center px-4 py-10 sm:py-14">
       <div className="w-full max-w-2xl">
+        {reviewItems?.length > 0 && (
+          <ReviewPopup items={reviewItems} stage={1} onDone={closeReviews} />
+        )}
         <div className="rounded-[28px] border border-line bg-white/90 shadow-[0_18px_50px_rgba(43,36,28,0.08)] overflow-hidden">
           <div className="px-6 py-8 sm:px-8 sm:py-10 text-center bg-[linear-gradient(180deg,#fff, #fbf8f1)] border-b border-line">
             <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full bg-moss/10 text-moss">
