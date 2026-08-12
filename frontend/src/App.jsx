@@ -21,6 +21,7 @@ import TrackOrder from "./pages/TrackOrder.jsx";
 import Returns from "./pages/Returns.jsx";
 import Privacy from "./pages/Privacy.jsx";
 import Terms from "./pages/Terms.jsx";
+import OrderSuccess from "./pages/OrderSuccess.jsx";
 import NotFound from "./pages/NotFound.jsx";
 
 import AdminDashboard from "./pages/admin/Dashboard.jsx";
@@ -68,6 +69,7 @@ export default function App() {
                 <Route path="/returns" element={<Returns />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />
+                <Route path="/order-success/:orderId" element={<OrderSuccess />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>

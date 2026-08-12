@@ -1,16 +1,25 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { X, Star, Check } from "lucide-react";
 import api from "../api/client.js";
 
 const fallback = "https://placehold.co/160x160/F7F3EA/2B241C?text=Mevamahal";
 
 export default function ReviewPopup({ items, stage = 1, onDone }) {
-  const [remaining, setRemaining] = useState(items || []);
+  const [remaining, setRemaining] = useState([]);
   const [index, setIndex] = useState(0);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setRemaining(items || []);
+    setIndex(0);
+    setRating(0);
+    setComment("");
+    setError("");
+  }, [items]);
+
   const current = remaining[index];
 
   if (!current) return null;

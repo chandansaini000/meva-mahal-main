@@ -34,7 +34,7 @@ export default function Checkout() {
     try {
       const { data } = await api.post("/orders", form);
       await refresh();
-      navigate("/account", { state: { orderPlaced: data.order.id, orderReviewItems: data.order.items } });
+      navigate(`/order-success/${data.order.id}`);
     } catch (err) {
       setError(err.response?.data?.error || "Could not place order");
     } finally {
