@@ -31,6 +31,7 @@ import AdminUsers from "./pages/admin/Users.jsx";
 import AdminCategories from "./pages/admin/Categories.jsx";
 import AdminLogin from "./pages/admin/Login.jsx";
 import AdminReviews from "./pages/admin/Reviews.jsx";
+import AdminCoupons from "./pages/admin/Coupons.jsx";
 
 export default function App() {
   return (
@@ -43,6 +44,7 @@ export default function App() {
       <Route path="/admin/orders" element={<AdminRoute><AdminOrders /></AdminRoute>} />
       <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
       <Route path="/admin/reviews" element={<AdminRoute><AdminReviews /></AdminRoute>} />
+      <Route path="/admin/coupons" element={<AdminRoute><AdminCoupons /></AdminRoute>} />
 
       <Route
         path="*"

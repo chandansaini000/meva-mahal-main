@@ -63,6 +63,21 @@ CREATE TABLE IF NOT EXISTS wishlist_items (
   UNIQUE (user_id, product_id)
 );
 
+CREATE TABLE IF NOT EXISTS coupons (
+  id                   SERIAL PRIMARY KEY,
+  code                 VARCHAR(50) UNIQUE NOT NULL,
+  description          TEXT,
+  discount_type        VARCHAR(20) NOT NULL, -- percentage | fixed | flat
+  discount_value       NUMERIC(10,2) NOT NULL,
+  min_order_amount     NUMERIC(10,2),
+  max_discount_amount  NUMERIC(10,2),
+  usage_limit          INTEGER,
+  used_count           INTEGER DEFAULT 0,
+  expires_at           TIMESTAMPTZ,
+  is_active            BOOLEAN DEFAULT true,
+  created_at           TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 CREATE TABLE IF NOT EXISTS orders (
   id             SERIAL PRIMARY KEY,
   user_id        INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -80,6 +95,8 @@ CREATE TABLE IF NOT EXISTS orders (
 
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS gift_service VARCHAR(120);
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS gift_message TEXT;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS coupon_id INTEGER REFERENCES coupons(id) ON DELETE SET NULL;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS discount_amount NUMERIC(10,2) DEFAULT 0;
 
 CREATE TABLE IF NOT EXISTS order_items (
   id          SERIAL PRIMARY KEY,

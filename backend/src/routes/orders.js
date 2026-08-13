@@ -40,7 +40,24 @@ router.post("/", requireAuth, async (req, res) => {
     payment_method,
     gift_service,
     gift_message,
+    coupon_code,
   } = req.body;
+
+  const requiredFields = {
+    shipping_name,
+    shipping_phone,
+    shipping_address,
+    shipping_city,
+    shipping_state,
+    shipping_pincode,
+  };
+
+  const missingField = Object.entries(requiredFields).find(([, value]) => !String(value || "").trim());
+  if (missingField) {
+    return res.status(400).json({
+      error: `${missingField[0].replaceAll("_", " ")} is required`,
+    });
+  }
 
   const client = await pool.connect();
 
@@ -88,12 +105,43 @@ router.post("/", requireAuth, async (req, res) => {
       0
     );
 
+    let coupon = null;
+    let discount = 0;
+    const couponCode = typeof coupon_code === "string" ? coupon_code.trim() : "";
+    if (couponCode) {
+      const couponRes = await client.query(`SELECT * FROM coupons WHERE UPPER(TRIM(code)) = UPPER(TRIM($1)) FOR UPDATE`, [couponCode]);
+      coupon = couponRes.rows[0];
+      if (!coupon || !coupon.is_active || (coupon.expires_at && new Date(coupon.expires_at) < new Date())) {
+        await client.query("ROLLBACK");
+        return res.status(400).json({ error: "Invalid or expired coupon" });
+      }
+      if (coupon.min_order_amount !== null && total < Number(coupon.min_order_amount)) {
+        await client.query("ROLLBACK");
+        return res.status(400).json({ error: `Minimum order amount is ₹${Number(coupon.min_order_amount).toFixed(2)}` });
+      }
+      if (coupon.usage_limit !== null && Number(coupon.used_count || 0) >= Number(coupon.usage_limit)) {
+        await client.query("ROLLBACK");
+        return res.status(400).json({ error: "This coupon usage limit has been reached" });
+      }
+      if (coupon.discount_type === "percentage") discount = total * Number(coupon.discount_value) / 100;
+      else if (coupon.discount_type === "fixed" || coupon.discount_type === "flat") discount = Number(coupon.discount_value);
+      else {
+        await client.query("ROLLBACK");
+        return res.status(400).json({ error: "Invalid coupon discount type" });
+      }
+      if (coupon.max_discount_amount !== null) discount = Math.min(discount, Number(coupon.max_discount_amount));
+      discount = Math.round(Math.min(discount, total) * 100) / 100;
+    }
+    const orderTotal = Math.round((total - discount) * 100) / 100;
+
     // Create order
     const orderRes = await client.query(
       `
       INSERT INTO orders (
         user_id,
         total_amount,
+        coupon_id,
+        discount_amount,
         shipping_name,
         shipping_phone,
         shipping_address,
@@ -106,13 +154,15 @@ router.post("/", requireAuth, async (req, res) => {
         status
       )
       VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'pending'
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, 'pending'
       )
       RETURNING *
       `,
       [
         req.user.id,
-        total,
+        orderTotal,
+        coupon?.id || null,
+        discount,
         shipping_name,
         shipping_phone,
         shipping_address,
@@ -126,6 +176,8 @@ router.post("/", requireAuth, async (req, res) => {
     );
 
     const order = orderRes.rows[0];
+
+    if (coupon) await client.query("UPDATE coupons SET used_count = used_count + 1 WHERE id = $1", [coupon.id]);
 
     // Create order items + reduce stock
     for (const item of cartRes.rows) {

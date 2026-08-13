@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { LayoutGrid, Package, ShoppingCart, Users, ArrowLeft, Tags, MessageSquare } from "lucide-react";
+import { LayoutGrid, Package, ShoppingCart, Users, ArrowLeft, Tags, MessageSquare, TicketPercent } from "lucide-react";
 
 const LINKS = [
   { to: "/admin", label: "Dashboard", icon: LayoutGrid },
@@ -8,6 +8,7 @@ const LINKS = [
   { to: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { to: "/admin/users", label: "Customers", icon: Users },
   { to: "/admin/reviews", label: "Reviews", icon: MessageSquare },
+  { to: "/admin/coupons", label: "Coupons", icon: TicketPercent },
 ];
 
 export default function AdminLayout({ children }) {
