@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import api from "../api/client.js";
 import { useCart } from "../context/CartContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
+import { isValidMobile, isValidPincode, sanitizeDigits } from "../utils/validation.js";
 
 export default function Checkout() {
   const { items, total, refresh } = useCart();
@@ -84,8 +85,18 @@ export default function Checkout() {
 
   async function handlePlaceOrder(e) {
     e.preventDefault();
-    setPlacing(true);
     setError("");
+
+    if (!isValidMobile(form.shipping_phone)) {
+      setError("Mobile number must contain exactly 10 digits.");
+      return;
+    }
+    if (!isValidPincode(form.shipping_pincode)) {
+      setError("Pincode must contain exactly 6 digits.");
+      return;
+    }
+
+    setPlacing(true);
 
     try {
       const { data } = await api.post("/orders", {
@@ -117,9 +128,13 @@ export default function Checkout() {
         />
         <input
           required
+          type="tel"
+          inputMode="numeric"
+          pattern="[0-9]{10}"
+          maxLength={10}
           placeholder="Phone"
           value={form.shipping_phone}
-          onChange={(e) => update("shipping_phone", e.target.value)}
+          onChange={(e) => update("shipping_phone", sanitizeDigits(e.target.value).slice(0, 10))}
           className="input"
         />
         <input
@@ -147,9 +162,13 @@ export default function Checkout() {
         </div>
         <input
           required
+          type="tel"
+          inputMode="numeric"
+          pattern="[0-9]{6}"
+          maxLength={6}
           placeholder="Pincode"
           value={form.shipping_pincode}
-          onChange={(e) => update("shipping_pincode", e.target.value)}
+          onChange={(e) => update("shipping_pincode", sanitizeDigits(e.target.value).slice(0, 6))}
           className="input"
         />
 

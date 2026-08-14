@@ -4,6 +4,7 @@ import { User, Package, MapPin, LogOut, LayoutDashboard } from "lucide-react";
 import api from "../api/client.js";
 import { useAuth } from "../context/AuthContext.jsx";
 import ReviewPopup from "../components/ReviewPopup.jsx";
+import { isValidMobile, isValidPincode, sanitizeDigits } from "../utils/validation.js";
 
 const TABS = [
   { id: "profile", label: "Profile", icon: User },
@@ -46,10 +47,22 @@ export default function Account() {
 
   async function handleSave(e) {
     e.preventDefault();
-    const { data } = await api.put("/users/me", form);
-    setUser((u) => ({ ...u, ...data.user }));
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    if (form.phone && !isValidMobile(form.phone)) {
+      setSaved("Mobile number must contain exactly 10 digits.");
+      return;
+    }
+    if (form.pincode && !isValidPincode(form.pincode)) {
+      setSaved("Pincode must contain exactly 6 digits.");
+      return;
+    }
+    try {
+      const { data } = await api.put("/users/me", form);
+      setUser((u) => ({ ...u, ...data.user }));
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (error) {
+      setSaved(error.response?.data?.error || "Could not save your details.");
+    }
   }
 
   return (
@@ -91,9 +104,9 @@ export default function Account() {
         {tab === "profile" && (
           <form onSubmit={handleSave} className="space-y-4 max-w-md">
             <h2 className="font-display text-2xl mb-4">Profile details</h2>
-            {saved && <p className="text-moss text-sm">Saved!</p>}
+            {saved && <p className={`${saved === true ? "text-moss" : "text-red-600"} text-sm`}>{saved === true ? "Saved!" : saved}</p>}
             <input placeholder="Full name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="input" />
-            <input placeholder="Phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="input" />
+            <input type="tel" inputMode="numeric" pattern="[0-9]{10}" maxLength={10} placeholder="Phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: sanitizeDigits(e.target.value).slice(0, 10) })} className="input" />
             <button className="px-6 py-3 rounded-full bg-ink text-cream font-medium hover:bg-clayDark transition-colors">Save changes</button>
           </form>
         )}
@@ -128,7 +141,7 @@ export default function Account() {
               <input placeholder="City" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="input" />
               <input placeholder="State" value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })} className="input" />
             </div>
-            <input placeholder="Pincode" value={form.pincode} onChange={(e) => setForm({ ...form, pincode: e.target.value })} className="input" />
+            <input type="tel" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} placeholder="Pincode" value={form.pincode} onChange={(e) => setForm({ ...form, pincode: sanitizeDigits(e.target.value).slice(0, 6) })} className="input" />
             <button className="px-6 py-3 rounded-full bg-ink text-cream font-medium hover:bg-clayDark transition-colors">Save address</button>
           </form>
         )}
