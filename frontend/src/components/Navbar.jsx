@@ -21,7 +21,8 @@ export default function Navbar() {
 
   function handleSearch(e) {
     e.preventDefault();
-    if (query.trim()) navigate(`/shop?q=${encodeURIComponent(query.trim())}`);
+    const trimmedQuery = query.trim();
+    if (trimmedQuery) navigate(`/shop?search=${encodeURIComponent(trimmedQuery)}`);
   }
 
   return (

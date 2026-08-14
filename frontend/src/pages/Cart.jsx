@@ -28,11 +28,11 @@ export default function Cart() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-12 grid lg:grid-cols-3 gap-10">
+    <div className="max-w-5xl mx-auto px-6 py-12 grid lg:grid-cols-3 gap-10" data-aos="fade-up">
       <div className="lg:col-span-2 space-y-4">
         <h1 className="font-display text-3xl mb-6">Your cart</h1>
-        {items.map((item) => (
-          <div key={item.id} className="flex items-center gap-4 border border-line rounded-xl2 p-4 bg-white/50">
+        {items.map((item, index) => (
+          <div key={item.id} data-aos="fade-up" data-aos-delay={(index % 4) * 100} className="flex items-center gap-4 border border-line rounded-xl2 p-4 bg-white/50">
             <img src={item.image_url || "https://placehold.co/100/F7F3EA/2B241C"} alt={item.name} className="w-20 h-20 rounded-lg object-cover" />
             <div className="flex-1">
               <p className="font-medium">{item.name}</p>

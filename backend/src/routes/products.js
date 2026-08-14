@@ -107,7 +107,7 @@ router.get("/", async (req, res) => {
     values.push(`%${q}%`);
 
     where.push(
-      `(p.name ILIKE $${values.length} OR p.description ILIKE $${values.length})`
+      `(p.name ILIKE $${values.length} OR p.description ILIKE $${values.length} OR c.name ILIKE $${values.length} OR c.slug ILIKE $${values.length})`
     );
   }
 

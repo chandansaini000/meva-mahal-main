@@ -91,7 +91,7 @@ export default function HomeExtraSections() {
       {/* =====================================================
           LIVE BETTER
       ====================================================== */}
-      <section className="max-w-7xl mx-auto px-5 sm:px-8 py-20 md:py-12">
+      <section className="max-w-7xl mx-auto px-5 sm:px-8 py-20 md:py-12" data-aos="fade-up">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
 
           <div>
@@ -151,7 +151,7 @@ export default function HomeExtraSections() {
       {/* =====================================================
           WHY CHOOSE US
       ====================================================== */}
-      <section className="py-16 sm:py-20 bg-white">
+      <section className="py-16 sm:py-20 bg-white" data-aos="fade-up">
 
         <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
 
@@ -226,7 +226,7 @@ export default function HomeExtraSections() {
       {/* =====================================================
           FAQ
       ====================================================== */}
-      <section className="max-w-7xl mx-auto px-5 sm:px-8 py-20 md:py-12">
+      <section className="max-w-7xl mx-auto px-5 sm:px-8 py-20 md:py-12" data-aos="fade-up">
 
         <div className="mb-10 text-center">
           <p className="uppercase tracking-[0.25em] text-[10px] sm:text-xs text-gold font-medium mb-3">

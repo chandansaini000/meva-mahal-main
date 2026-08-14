@@ -32,8 +32,18 @@ import AdminCategories from "./pages/admin/Categories.jsx";
 import AdminLogin from "./pages/admin/Login.jsx";
 import AdminReviews from "./pages/admin/Reviews.jsx";
 import AdminCoupons from "./pages/admin/Coupons.jsx";
-
+import { useEffect } from "react";
+import AOS from "aos";
+import "aos/dist/aos.css";
 export default function App() {
+   useEffect(() => {
+    AOS.init({
+      duration: 800,
+      easing: "ease-in-out",
+      once: true,
+      offset: 100,
+    });
+  }, []);
   return (
     <Routes>
       <Route path="/admin/login" element={<AdminLogin />} />

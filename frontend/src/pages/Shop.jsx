@@ -12,7 +12,8 @@ export default function Shop() {
   const [loading, setLoading] = useState(true);
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const [query, setQuery] = useState("");
+  const searchQuery = searchParams.get("search") || searchParams.get("q") || "";
+  const [query, setQuery] = useState(searchQuery);
   const [category, setCategory] = useState(searchParams.get("category") || "");
   const [sort, setSort] = useState("newest");
   const [price, setPrice] = useState("");
@@ -28,7 +29,8 @@ export default function Shop() {
   useEffect(() => {
     const selectedCategory = searchParams.get("category") || "";
     setCategory(selectedCategory);
-  }, [searchParams]);
+    setQuery(searchQuery);
+  }, [searchParams, searchQuery]);
 
   useEffect(() => {
     setLoading(true);
@@ -100,16 +102,27 @@ export default function Shop() {
 
     const nextParams = new URLSearchParams(searchParams);
     nextParams.delete("category");
+    nextParams.delete("search");
+    nextParams.delete("q");
+    setSearchParams(nextParams);
+  }
+
+  function clearSearch() {
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete("search");
+    nextParams.delete("q");
     setSearchParams(nextParams);
   }
 
   return (
     <main className="max-w-7xl mx-auto px-6 py-12 md:py-16">
-      <div>
+      <div data-aos="fade-up">
         <p className="uppercase tracking-[0.2em] text-xs text-clay font-medium">The pantry edit</p>
         <h1 className="font-display text-5xl mt-3">Premium Dry Fruits</h1>
         <p className="text-sm text-ink/55 mt-4">
-          {category
+          {searchQuery
+            ? `Search results for "${searchQuery}"`
+            : category
             ? `Category: ${categories.find((item) => item.slug === category)?.name || category}`
             : "All products"}
         </p>
@@ -124,10 +137,15 @@ export default function Shop() {
               All Products
             </button>
           ) : null}
+          {searchQuery ? (
+            <button type="button" onClick={clearSearch} className="ml-4 text-sm text-clay underline">
+              View all products
+            </button>
+          ) : null}
         </p>
       </div>
 
-      <section className="mt-7 rounded-xl2 border border-line bg-white/70 p-3 shadow-sm">
+      <section className="mt-7 rounded-xl2 border border-line bg-white/70 p-3 shadow-sm" data-aos="fade-up">
         <div className="grid lg:grid-cols-[1.7fr_.7fr_.7fr_.7fr_auto] gap-3">
           <label className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ink/40" />
@@ -193,13 +211,15 @@ export default function Shop() {
         <p className="text-ink/45 py-16">Loading the harvest…</p>
       ) : shown.length ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-          {shown.map((product) => (
-            <ProductCard key={product.id} product={product} />
+          {shown.map((product, index) => (
+            <ProductCard key={product.id} product={product} index={index} />
           ))}
         </div>
       ) : (
         <div className="rounded-xl2 border border-line text-center py-16">
-          <p className="font-display text-2xl">Nothing matched that search.</p>
+          <p className="font-display text-2xl">
+            {searchQuery ? `No products found for "${searchQuery}"` : "Nothing matched that search."}
+          </p>
           <button onClick={clearFilters} className="text-clay underline mt-3">
             Clear filters
           </button>

@@ -320,7 +320,7 @@ export default function ProductDetail() {
             <div>
               <div className="w-[350px] max-w-full">
                 {/* Main image */}
-                <div className="relative aspect-square w-full rounded-2xl bg-white overflow-hidden border border-line">
+                <div className="relative aspect-square w-full rounded-2xl bg-white overflow-hidden border border-line" data-aos="zoom-in">
                   <img
                     src={activeImage}
                     alt={product.name}
@@ -644,10 +644,11 @@ export default function ProductDetail() {
               </h2>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-                {related.map((item) => (
+                {related.map((item, index) => (
                   <ProductCard
                     key={item.id}
                     product={item}
+                    index={index}
                   />
                 ))}
               </div>

@@ -103,7 +103,7 @@ useEffect(() => {
   return (
     <div>
       <section className="max-w-7xl mx-auto px-6 pt-6 pb-24 grid lg:grid-cols-2 gap-12 items-center">
-        <div>
+        <div data-aos="fade-up">
           <p className="uppercase tracking-[0.25em] text-xs text-clay font-medium mb-6">{heroEyebrow}</p>
           <h1 className="font-display text-6xl leading-[1.05] mb-6">
             {heroTitle.split("nature's").length === 2 ? (
@@ -126,7 +126,7 @@ useEffect(() => {
             </Link>
           </div>
         </div>
-        <div className="relative rounded-xl2 overflow-hidden aspect-[5/4] max-h-[540px]">
+        <div className="relative rounded-xl2 overflow-hidden aspect-[5/4] max-h-[540px]" data-aos="zoom-in">
           <img
             src={sliderImages[slideIndex] || heroImage}
             alt="Product showcase"
@@ -148,7 +148,7 @@ useEffect(() => {
       </section>
 
       <section className="max-w-7xl mx-auto px-6 pb-24">
-        <div className="rounded-xl2 bg-ink text-cream p-8 md:p-12 grid md:grid-cols-[1fr_auto] gap-8 items-center overflow-hidden relative">
+        <div className="rounded-xl2 bg-ink text-cream p-8 md:p-12 grid md:grid-cols-[1fr_auto] gap-8 items-center overflow-hidden relative" data-aos="fade-up">
           <div className="relative z-10"><p className="uppercase tracking-[.2em] text-xs text-clay font-medium mb-3">Made for meaningful moments</p><h2 className="font-display text-3xl md:text-4xl">Gift better, without the guesswork.</h2><p className="mt-4 text-cream/70 max-w-xl">From one thoughtful box to hundreds of beautifully branded gifts, we curate, pack and deliver every detail.</p></div>
           <Link to="/services" className="relative z-10 px-6 py-3 rounded-full bg-cream text-ink font-medium hover:bg-white transition-colors">Explore gifting services</Link>
           <div className="absolute -right-10 -bottom-24 w-72 h-72 rounded-full bg-clay/30 blur-2xl" />
@@ -156,13 +156,13 @@ useEffect(() => {
       </section>
 
       <section className="max-w-7xl mx-auto px-6 pb-24">
-        <div className="text-center mb-9">
+        <div className="text-center mb-9" data-aos="fade-up">
           <p className="uppercase tracking-[0.2em] text-xs text-clay font-medium mb-2">Shop by collection</p>
           <h2 className="font-display text-3xl">A little something for every ritual.</h2>
         </div>
         <div className="flex justify-between gap-4 overflow-x-auto pb-2">
-          {(categories.length ? categories : collections).map((collection) => (
-            <Link key={collection.slug} to={`/shop?category=${collection.slug}`} className="group shrink-0 text-center">
+          {(categories.length ? categories : collections).map((collection, index) => (
+            <Link key={collection.slug} to={`/shop?category=${collection.slug}`} className="group shrink-0 text-center" data-aos="zoom-in" data-aos-delay={(index % 4) * 100}>
               <img
                 src={collection.image_url || collection.image || "https://placehold.co/500x500/F7F3EA/2B241C?text=Cat"}
                 alt={collection.name}
@@ -175,7 +175,7 @@ useEffect(() => {
       </section>
 
       <section className="max-w-7xl mx-auto px-6 pb-24">
-        <div className="flex items-end justify-between mb-8">
+        <div className="flex items-end justify-between mb-8" data-aos="fade-up">
           <div>
             <p className="uppercase tracking-[0.2em] text-xs text-clay font-medium mb-2">This week's picks</p>
             <h2 className="font-display text-3xl">Featured harvest</h2>
@@ -183,8 +183,8 @@ useEffect(() => {
           <Link to="/shop" className="text-sm font-medium hover:text-clay">View all →</Link>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-          {featured.map((p) => (
-            <ProductCard key={p.id} product={p} />
+          {featured.map((p, index) => (
+            <ProductCard key={p.id} product={p} index={index} />
           ))}
         </div>
         {featured.length === 0 && (

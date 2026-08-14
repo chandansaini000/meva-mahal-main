@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 import api from "../api/client.js";
 import { resolveImageSrc } from "../utils/image.js";
 
-export default function ProductCard({ product }) {
+export default function ProductCard({ product, index = 0 }) {
   const { addItem, updateQuantity, items } = useCart();
   const { user } = useAuth();
   const [wishlisted, setWishlisted] = useState(Boolean(product.is_wishlisted));
@@ -44,7 +44,7 @@ export default function ProductCard({ product }) {
   }
 
   return (
-    <Link to={`/product/${product.slug}`} className="group block">
+    <Link to={`/product/${product.slug}`} className="group block" data-aos="fade-up" data-aos-delay={(index % 4) * 100}>
       <div className="relative rounded-xl2 overflow-hidden bg-white/60 border border-line aspect-square">
         <img
           src={resolveImageSrc(productImage)}

@@ -115,8 +115,8 @@ export default function Checkout() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-12 grid lg:grid-cols-2 gap-12">
-      <form onSubmit={handlePlaceOrder} className="space-y-4">
+    <div className="max-w-4xl mx-auto px-6 py-12 grid lg:grid-cols-2 gap-12" data-aos="fade-up">
+      <form onSubmit={handlePlaceOrder} className="space-y-4" data-aos="fade-right">
         <h1 className="font-display text-3xl mb-4">Shipping details</h1>
         {error && <p className="text-red-600 text-sm">{error}</p>}
         <input
@@ -192,7 +192,7 @@ export default function Checkout() {
         </button>
       </form>
 
-      <div className="border border-line rounded-xl2 p-6 bg-white/50 h-fit">
+      <div className="border border-line rounded-xl2 p-6 bg-white/50 h-fit" data-aos="fade-left">
         <h2 className="font-display text-xl mb-4">Order items</h2>
         <div className="space-y-3">
           {items.map((item) => (

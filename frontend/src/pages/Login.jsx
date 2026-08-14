@@ -27,7 +27,7 @@ export default function Login() {
   }
 
   return (
-    <div className="max-w-sm mx-auto px-6 py-24">
+    <div className="max-w-sm mx-auto px-6 py-24" data-aos="fade-up">
       <h1 className="font-display text-3xl mb-2">Welcome back</h1>
       <p className="text-ink/50 mb-8">Log in to your Mevamahal account.</p>
 

@@ -66,7 +66,7 @@ export default function Account() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-12 grid lg:grid-cols-4 gap-10">
+    <div className="max-w-5xl mx-auto px-6 py-12 grid lg:grid-cols-4 gap-10" data-aos="fade-up">
       {reviewItems?.length > 0 && <ReviewPopup items={reviewItems} stage={reviewStage} onDone={closeReviews} />}
       <aside className="lg:col-span-1">
         <div className="flex items-center gap-3 mb-8">

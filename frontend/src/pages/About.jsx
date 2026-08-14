@@ -8,7 +8,7 @@ const values = [
 ];
 export default function About() {
   return <main>
-    <section className="relative min-h-[390px] grid place-items-center overflow-hidden border-b border-line px-6 py-16">
+    <section className="relative min-h-[390px] grid place-items-center overflow-hidden border-b border-line px-6 py-16" data-aos="zoom-in">
       <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Planters-Trail-Mix.jpg?width=1800" alt="Assorted dry fruits" className="absolute inset-0 h-full w-full object-cover opacity-35" />
       <div className="absolute inset-0 bg-cream/70" />
       <div className="relative max-w-3xl rounded-xl2 border border-white/70 bg-cream/85 p-8 md:p-12 text-center shadow-xl backdrop-blur-sm">
@@ -19,12 +19,49 @@ export default function About() {
     </section>
 
     <section className="max-w-6xl mx-auto px-6 py-16 md:py-20">
-      <div className="grid lg:grid-cols-2 gap-10 items-center">
-        <div className="rounded-x12 overflow-hidden">
-          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Planters-Trail-Mix.jpg?width=1100" alt="A selection of dry fruits and nuts" className="w-[350] h-[350] object-cover border border-line rounded-xl2" />
-        </div>
-        <article><p className="uppercase tracking-[.2em] text-xs text-clay font-medium mb-3">From orchard to home</p><h2 className="font-display text-4xl">A family in the orchards.</h2><div className="mt-6 space-y-4 text-ink/70 leading-relaxed"><p>Mevamahal began with a love for good ingredients and the small rituals they create. We choose dry fruits for their flavour, texture and freshness—then pack them in small batches so they arrive at their best.</p><p>From everyday handfuls to thoughtful gifts, every order is prepared with the same care we would bring to our own table.</p></div><Link to="/shop" className="inline-flex items-center gap-2 mt-7 px-5 py-3 rounded-full bg-ink text-cream font-medium hover:bg-clayDark">Shop the harvest <span aria-hidden>→</span></Link></article>
-      </div>
+      <div className="grid lg:grid-cols-[40%_60%] gap-0 items-center">
+  <div
+    className="rounded-xl px-6 overflow-hidden group flex justify-end"
+    data-aos="fade-right"
+  >
+    
+    <img
+      src="https://res.cloudinary.com/zrhelpub/image/upload/v1786703090/6f21dcb1af1848a84536a7086656e97e.jpg"
+      alt="A selection of dry fruits and nuts"
+      className="w-[350px] h-[350px] object-cover border border-line rounded-xl transition-all duration-500 ease-out group-hover:scale-105 group-hover:shadow-xl"
+    />
+  </div>
+
+  <article>
+    <p className="uppercase tracking-[.2em] text-xs text-clay font-medium mb-3">
+      From orchard to home
+    </p>
+
+    <h2 className="font-display text-4xl">
+      A family in the orchards.
+    </h2>
+
+    <div className="mt-6 space-y-4 text-ink/70 leading-relaxed">
+      <p>
+        Mevamahal began with a love for good ingredients and the small rituals
+        they create. We choose dry fruits for their flavour, texture and
+        freshness—then pack them in small batches so they arrive at their best.
+      </p>
+
+      <p>
+        From everyday handfuls to thoughtful gifts, every order is prepared
+        with the same care we would bring to our own table.
+      </p>
+    </div>
+
+    <Link
+      to="/shop"
+      className="inline-flex items-center gap-2 mt-7 px-5 py-3 rounded-full bg-ink text-cream font-medium hover:bg-clayDark"
+    >
+      Shop the harvest <span aria-hidden>→</span>
+    </Link>
+  </article>
+</div>
 
       <div className="grid md:grid-cols-3 gap-4 mt-12">{values.map(({ icon: Icon, title, text }) => <div key={title} className="rounded-xl2 border border-line bg-white/55 p-5 flex gap-4"><div className="shrink-0 w-10 h-10 rounded-full bg-gold/20 text-clay grid place-items-center"><Icon className="w-4 h-4" /></div><div><h3 className="font-display text-lg">{title}</h3><p className="text-sm text-ink/60 mt-1">{text}</p></div></div>)}</div>
 

@@ -20,14 +20,14 @@ export default function Wishlist() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-12">
+    <div className="max-w-5xl mx-auto px-6 py-12" data-aos="fade-up">
       <h1 className="font-display text-3xl mb-8">Your wishlist</h1>
       {items.length === 0 ? (
         <p className="text-ink/50">Nothing saved yet. <Link to="/shop" className="text-clay underline">Browse products</Link></p>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {items.map((p) => (
-            <div key={p.id} className="border border-line rounded-xl2 p-4 bg-white/50 flex gap-4">
+          {items.map((p, index) => (
+            <div key={p.id} data-aos="fade-up" data-aos-delay={(index % 4) * 100} className="border border-line rounded-xl2 p-4 bg-white/50 flex gap-4">
               <img src={p.image_url || "https://placehold.co/100"} className="w-20 h-20 rounded-lg object-cover" alt={p.name} />
               <div className="flex-1">
                 <Link to={`/product/${p.slug}`} className="font-medium hover:text-clay">{p.name}</Link>
