@@ -4,6 +4,7 @@ import { Heart, Star, Minus, Plus } from "lucide-react";
 import { useCart } from "../context/CartContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import api from "../api/client.js";
+import { resolveImageSrc } from "../utils/image.js";
 
 export default function ProductCard({ product }) {
   const { addItem, updateQuantity, items } = useCart();
@@ -12,6 +13,8 @@ export default function ProductCard({ product }) {
 
   const cartItem = items.find((item) => item.id === product.id);
   const cartQuantity = cartItem?.quantity || 0;
+  const productImages = Array.isArray(product.images) ? product.images : [];
+  const productImage = productImages.find(Boolean) || product.image_url;
 
   async function handleWishlist(e) {
     e.preventDefault();
@@ -44,7 +47,7 @@ export default function ProductCard({ product }) {
     <Link to={`/product/${product.slug}`} className="group block">
       <div className="relative rounded-xl2 overflow-hidden bg-white/60 border border-line aspect-square">
         <img
-          src={product.image_url || "https://placehold.co/400x400/F7F3EA/2B241C?text=Mevamahal"}
+          src={resolveImageSrc(productImage)}
           alt={product.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />

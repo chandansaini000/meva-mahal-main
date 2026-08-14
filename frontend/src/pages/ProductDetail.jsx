@@ -13,6 +13,7 @@ import api from "../api/client.js";
 import { useCart } from "../context/CartContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import ProductCard from "../components/ProductCard.jsx";
+import { resolveImageSrc } from "../utils/image.js";
 
 function ReviewStars({ rating, interactive = false, value, onChange }) {
   return (
@@ -138,7 +139,7 @@ export default function ProductDetail() {
   // Product gallery
   // --------------------------------------------------
   const gallery = useMemo(
-    () => asImageArray(data?.product),
+    () => asImageArray(data?.product).map((image) => resolveImageSrc(image)),
     [data]
   );
 
@@ -174,8 +175,7 @@ export default function ProductDetail() {
   const activeImage =
     gallery[selectedImageIndex] ||
     gallery[0] ||
-    product.image_url ||
-    "https://placehold.co/600x600/F7F3EA/2B241C?text=Mevamahal";
+    resolveImageSrc(product.image_url);
 
   // --------------------------------------------------
   // Cart

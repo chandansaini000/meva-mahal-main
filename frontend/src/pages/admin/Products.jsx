@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Plus, Pencil, Trash2, X } from "lucide-react";
 import api from "../../api/client.js";
 import AdminLayout from "../../components/AdminLayout.jsx";
+import { DEFAULT_IMAGE_FALLBACK, resolveImageSrc } from "../../utils/image.js";
 
 const EMPTY = {
   name: "",
@@ -86,8 +87,9 @@ export default function AdminProducts() {
 
     try {
       const body = new FormData();
+      const imageDataChanged = removedImages.length > 0 || newFiles.length > 0;
       Object.entries(form).forEach(([key, value]) => {
-        if (key === "images") return;
+        if (key === "images" || (key === "image_url" && imageDataChanged)) return;
         if (value === "" || value === null || value === undefined) return;
         body.append(key, typeof value === "boolean" ? String(value) : String(value));
       });
@@ -150,7 +152,7 @@ export default function AdminProducts() {
               return (
                 <tr key={p.id} className="border-t border-line">
                   <td className="p-3 flex items-center gap-3">
-                    <img src={productImages[0] || p.image_url || "https://placehold.co/40"} className="w-10 h-10 rounded-lg object-cover" alt="" />
+                    <img src={resolveImageSrc(productImages[0] || p.image_url)} onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = DEFAULT_IMAGE_FALLBACK; }} className="w-10 h-10 rounded-lg object-cover" alt="" />
                     {p.name}
                   </td>
                   <td>{p.category_name || "—"}</td>
@@ -207,9 +209,18 @@ export default function AdminProducts() {
 
             <input placeholder="Primary image URL" value={form.image_url || ""} onChange={(e) => setForm({ ...form, image_url: e.target.value })} className="input" />
 
+            {form.image_url && (
+              <img
+                src={resolveImageSrc(form.image_url)}
+                onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = DEFAULT_IMAGE_FALLBACK; }}
+                alt="Primary product preview"
+                className="w-full h-32 object-cover rounded-lg border border-line"
+              />
+            )}
+
             <div className="rounded-lg border border-dashed border-line p-3">
               <label className="block text-sm font-medium mb-2">Upload product images</label>
-              <input type="file" multiple accept="image/*" onChange={handleFileChange} className="block w-full text-sm" />
+              <input type="file" multiple accept="image/jpeg,image/png,image/webp" onChange={handleFileChange} className="block w-full text-sm" />
               <p className="text-xs text-ink/45 mt-2">You can add up to 5 images total per upload.</p>
 
               <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -217,7 +228,7 @@ export default function AdminProducts() {
                   .filter((url) => !removedImages.includes(url))
                   .map((url) => (
                     <div key={url} className="relative">
-                      <img src={url} alt="Existing product preview" className="w-full h-24 object-cover rounded-lg border border-line" />
+                      <img src={resolveImageSrc(url)} onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = DEFAULT_IMAGE_FALLBACK; }} alt="Existing product preview" className="w-full h-24 object-cover rounded-lg border border-line" />
                       <button
                         type="button"
                         onClick={() => removeExistingImage(url)}
@@ -230,7 +241,7 @@ export default function AdminProducts() {
 
                 {newFiles.map((file, index) => (
                   <div key={`${file.name}-${index}`} className="relative">
-                    <img src={previewUrls[index]} alt="New product preview" className="w-full h-24 object-cover rounded-lg border border-line" />
+                    <img src={previewUrls[index]} onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = DEFAULT_IMAGE_FALLBACK; }} alt="New product preview" className="w-full h-24 object-cover rounded-lg border border-line" />
                     <button
                       type="button"
                       onClick={() => removeNewFile(index)}

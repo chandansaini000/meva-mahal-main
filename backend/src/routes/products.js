@@ -1,32 +1,23 @@
 import { Router } from "express";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 import multer from "multer";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { pool } from "../db.js";
 import { requireAuth, requireAdmin } from "../middleware/auth.js";
+import cloudinary from "../config/cloudinary.js";
 
 const router = Router();
 
-const uploadsDir = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "../uploads"
-);
-
-fs.mkdirSync(uploadsDir, { recursive: true });
+const cloudinaryStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "mevamahal/products",
+    allowed_formats: ["jpg", "jpeg", "png", "webp"],
+    resource_type: "image",
+  },
+});
 
 const upload = multer({
-  storage: multer.diskStorage({
-    destination: uploadsDir,
-    filename: (req, file, callback) => {
-      callback(
-        null,
-        `${Date.now()}-${Math.round(Math.random() * 1e9)}${path
-          .extname(file.originalname)
-          .toLowerCase()}`
-      );
-    },
-  }),
+  storage: cloudinaryStorage,
 
   limits: {
     fileSize: 5 * 1024 * 1024,
@@ -42,6 +33,56 @@ const upload = multer({
     callback(null, true);
   },
 });
+
+function cloudinaryUpload(fields) {
+  const middleware = fields === "images"
+    ? upload.array("images", 5)
+    : upload.single(fields);
+
+  return (req, res, next) => {
+    middleware(req, res, (error) => {
+      if (!error) return next();
+      return res.status(400).json({
+        error: error.code === "LIMIT_FILE_SIZE"
+          ? "Image must be 5 MB or smaller"
+          : error.message || "Could not upload image to Cloudinary",
+      });
+    });
+  };
+}
+
+// multer-storage-cloudinary exposes the uploaded delivery URL as `path`
+// (and the public id as `filename`). Keep the fallbacks for adapters that
+// expose Cloudinary's native response keys instead.
+function getCloudinaryUrl(file) {
+  return file?.secure_url || file?.path || file?.url || null;
+}
+
+function getCloudinaryPublicId(file) {
+  return file?.public_id || file?.filename || null;
+}
+
+function toPublicUploadUrl(req, value) {
+  if (!value || /^(https?:|data:|blob:)/i.test(value)) return value;
+  if (/^\/?uploads\//i.test(value)) {
+    return `${req.protocol}://${req.get("host")}/uploads/${value.replace(/^\/?uploads\//i, "")}`;
+  }
+  return value;
+}
+
+function normalizeProduct(req, product) {
+  if (!product) return product;
+  let images = product.images;
+  if (typeof images === "string") {
+    try { images = JSON.parse(images); } catch { images = []; }
+  }
+  if (!Array.isArray(images)) images = [];
+  return {
+    ...product,
+    image_url: toPublicUploadUrl(req, product.image_url),
+    images: images.map((image) => toPublicUploadUrl(req, image)),
+  };
+}
 
 /* =========================================================
    PUBLIC: LIST PRODUCTS
@@ -132,7 +173,7 @@ router.get("/", async (req, res) => {
     );
 
     res.json({
-      products: rows,
+      products: rows.map((row) => normalizeProduct(req, row)),
       total: Number(countRes.rows[0].count),
     });
   } catch (err) {
@@ -177,7 +218,7 @@ router.post(
   "/categories",
   requireAuth,
   requireAdmin,
-  upload.single("image"),
+  cloudinaryUpload("image"),
   async (req, res) => {
     const name = String(req.body.name || "").trim();
     const slug = String(req.body.slug || "").trim().toLowerCase();
@@ -192,7 +233,7 @@ router.post(
     }
 
     const imageUrl = req.file
-      ? `/uploads/${req.file.filename}`
+      ? getCloudinaryUrl(req.file)
       : null;
 
     try {
@@ -233,7 +274,7 @@ router.put(
   "/categories/:id",
   requireAuth,
   requireAdmin,
-  upload.single("image"),
+  cloudinaryUpload("image"),
   async (req, res) => {
     const name = String(req.body.name || "").trim();
     const slug = String(req.body.slug || "").trim().toLowerCase();
@@ -266,7 +307,7 @@ router.put(
       let imageUrl = existing.rows[0].image_url;
 
       if (req.file) {
-        imageUrl = `/uploads/${req.file.filename}`;
+        imageUrl = getCloudinaryUrl(req.file);
       } else if (String(req.body.removeImage || "").toLowerCase() === "true") {
         imageUrl = null;
       }
@@ -342,17 +383,8 @@ router.post(
   "/upload",
   requireAuth,
   requireAdmin,
+  cloudinaryUpload("image"),
   (req, res) => {
-    upload.single("image")(req, res, (error) => {
-      if (error) {
-        return res.status(400).json({
-          error:
-            error.code === "LIMIT_FILE_SIZE"
-              ? "Image must be 5 MB or smaller"
-              : error.message || "Upload a JPG, PNG, or WebP image",
-        });
-      }
-
       if (!req.file) {
         return res.status(400).json({
           error: "Choose a JPG, PNG, or WebP image",
@@ -360,9 +392,9 @@ router.post(
       }
 
       res.status(201).json({
-        url: `/uploads/${req.file.filename}`,
+        url: getCloudinaryUrl(req.file),
+        public_id: getCloudinaryPublicId(req.file),
       });
-    });
   }
 );
 
@@ -442,7 +474,7 @@ router.get("/:slug", async (req, res) => {
     );
 
     res.json({
-      product: rows[0],
+      product: normalizeProduct(req, rows[0]),
       reviews: reviews.rows,
     });
   } catch (err) {
@@ -462,7 +494,7 @@ router.post(
   "/",
   requireAuth,
   requireAdmin,
-  upload.array("images", 10),
+  cloudinaryUpload("images"),
   async (req, res) => {
     try {
       const {
@@ -489,9 +521,7 @@ router.post(
         }
       }
 
-      const uploadedImages = (req.files || []).map(
-        (file) => `/uploads/${file.filename}`
-      );
+      const uploadedImages = (req.files || []).map(getCloudinaryUrl).filter(Boolean);
 
       const images = [
         ...existingImages,
@@ -543,7 +573,7 @@ router.post(
       );
 
       res.status(201).json({
-        product: rows[0],
+        product: normalizeProduct(req, rows[0]),
       });
     } catch (err) {
       console.error("Create product error:", err);
@@ -563,7 +593,7 @@ router.put(
   "/:id",
   requireAuth,
   requireAdmin,
-  upload.array("images", 10),
+  cloudinaryUpload("images"),
   async (req, res) => {
     try {
       const productId = req.params.id;
@@ -696,9 +726,7 @@ router.put(
          NEW UPLOADED IMAGES
       ----------------------------------------- */
 
-      const newImages = (req.files || []).map(
-        (file) => `/uploads/${file.filename}`
-      );
+      const newImages = (req.files || []).map(getCloudinaryUrl).filter(Boolean);
 
       const finalImages = [
         ...existingImages,
@@ -762,7 +790,7 @@ router.put(
       );
 
       res.json({
-        product: rows[0],
+        product: normalizeProduct(req, rows[0]),
       });
     } catch (err) {
       console.error("Update product error:", err);
