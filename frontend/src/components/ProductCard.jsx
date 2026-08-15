@@ -51,6 +51,11 @@ export default function ProductCard({ product, index = 0 }) {
           alt={product.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
+        {(product.is_new_arrival || product.is_featured || product.is_best_seller) && (
+          <div className="absolute top-3 left-3 right-12 flex flex-wrap gap-1">
+            {product.is_new_arrival && <span className="rounded-full bg-clay text-white text-[10px] px-2 py-1">NEW</span>}
+                     </div>
+        )}
         <button
           onClick={handleWishlist}
           className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 flex items-center justify-center focus-ring transition-colors text-ink"
@@ -61,8 +66,9 @@ export default function ProductCard({ product, index = 0 }) {
         </button>
         {product.compare_price > product.price && (
           <>
-            <span className="absolute top-3 left-3 bg-clay text-white text-[11px] px-2 py-1 rounded-full">Sale</span>
-            <span className="absolute bottom-3 left-3 bg-black/75 text-white text-[11px] px-2 py-1 rounded-full">
+<span className="absolute bottom-3 right-3 bg-clay text-white text-[11px] px-2 py-1 rounded-full">
+  Sale
+</span>            <span className="absolute bottom-3 left-3 bg-black/75 text-white text-[11px] px-2 py-1 rounded-full">
               {Math.round(((product.compare_price - product.price) / product.compare_price) * 100)}% off
             </span>
           </>

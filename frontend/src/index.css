@@ -52,3 +52,20 @@ body {
 .animate-review-slide:hover {
   animation-play-state: paused;
 }
+.category-scroll {
+  animation: categoryAutoScroll 25s linear infinite;
+}
+
+.category-scroll:hover {
+  animation-play-state: paused;
+}
+
+@keyframes categoryAutoScroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}

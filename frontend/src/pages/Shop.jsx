@@ -40,6 +40,8 @@ export default function Shop() {
       category,
       sort,
       limit: 100,
+      newArrival: quick === "New arrival" ? "true" : undefined,
+      bestSeller: quick === "Best seller" ? "true" : undefined,
       featured: quick === "Featured" ? "true" : undefined,
     };
 

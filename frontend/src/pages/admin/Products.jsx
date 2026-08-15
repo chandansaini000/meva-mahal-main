@@ -13,7 +13,9 @@ const EMPTY = {
   stock: "",
   unit: "250g",
   category_id: "",
+  is_new_arrival: false,
   is_featured: false,
+  is_best_seller: false,
 };
 
 function asImageArray(value) {
@@ -143,6 +145,7 @@ export default function AdminProducts() {
               <th>Category</th>
               <th>Price</th>
               <th>Stock</th>
+              <th>Merchandising</th>
               <th></th>
             </tr>
           </thead>
@@ -158,6 +161,13 @@ export default function AdminProducts() {
                   <td>{p.category_name || "—"}</td>
                   <td>₹{p.price}</td>
                   <td className={p.stock <= 10 ? "text-clay font-medium" : ""}>{p.stock}</td>
+                  <td className="p-3">
+                    <div className="flex flex-wrap gap-1">
+                      {p.is_new_arrival && <span className="rounded-full bg-clay/15 text-clay px-2 py-1 text-[10px]">New Arrival</span>}
+                      {p.is_featured && <span className="rounded-full bg-gold/20 text-ink px-2 py-1 text-[10px]">Featured</span>}
+                      {p.is_best_seller && <span className="rounded-full bg-ink text-cream px-2 py-1 text-[10px]">Best Seller</span>}
+                    </div>
+                  </td>
                   <td className="p-3 flex gap-3 justify-end">
                     <button onClick={() => openEdit(p)} className="text-ink/50 hover:text-clay">
                       <Pencil className="w-4 h-4" />
@@ -254,10 +264,21 @@ export default function AdminProducts() {
               </div>
             </div>
 
-            <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={form.is_featured} onChange={(e) => setForm({ ...form, is_featured: e.target.checked })} />
-              Feature on homepage
-            </label>
+            <div className="rounded-lg border border-line p-3 space-y-2">
+              <p className="text-sm font-medium">Product merchandising</p>
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={form.is_new_arrival} onChange={(e) => setForm({ ...form, is_new_arrival: e.target.checked })} />
+                New Arrival
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={form.is_featured} onChange={(e) => setForm({ ...form, is_featured: e.target.checked })} />
+                Featured
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={form.is_best_seller} onChange={(e) => setForm({ ...form, is_best_seller: e.target.checked })} />
+                Best Seller
+              </label>
+            </div>
 
             {error && <p className="text-red-600 text-sm">{error}</p>}
             <button disabled={saving} className="w-full py-3 rounded-full bg-ink text-cream font-medium disabled:opacity-50">

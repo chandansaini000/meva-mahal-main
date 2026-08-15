@@ -13,8 +13,29 @@ const collections = [
   { name: "Gift boxes", slug: "gift-boxes", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Gift_box.jpg?width=500" },
 ];
 
+function ProductShelf({ eyebrow, title, products }) {
+  if (!products.length) return null;
+
+  return (
+    <section className="max-w-7xl mx-auto px-6 pb-24">
+      <div className="flex items-end justify-between mb-8" data-aos="fade-up">
+        <div>
+          <p className="uppercase tracking-[0.2em] text-xs text-clay font-medium mb-2">{eyebrow}</p>
+          <h2 className="font-display text-3xl">{title}</h2>
+        </div>
+        <Link to="/shop" className="text-sm font-medium hover:text-clay">View all →</Link>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+        {products.slice(0, 8).map((product, index) => (
+          <ProductCard key={product.id} product={product} index={index} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
-  const [featured, setFeatured] = useState([]);
+  const [products, setProducts] = useState([]);
   const [settings, setSettings] = useState(null);
   const [slideIndex, setSlideIndex] = useState(0);
   const [categories, setCategories] = useState([]);
@@ -22,10 +43,14 @@ export default function Home() {
   const [reviewsLoading, setReviewsLoading] = useState(true);
 const [reviewsError, setReviewsError] = useState("");
   useEffect(() => {
-    api.get("/products?featured=true&limit=8").then(({ data }) => setFeatured(data.products));
+    api.get("/products?limit=100").then(({ data }) => setProducts(data.products || [])).catch(() => setProducts([]));
     api.get("/site/settings").then(({ data }) => setSettings(data.settings)).catch(() => setSettings(null));
     api.get("/products/categories").then(({ data }) => setCategories(data.categories)).catch(() => setCategories([]));
   }, []);
+
+  const newArrivals = useMemo(() => products.filter((product) => product.is_new_arrival), [products]);
+  const featured = useMemo(() => products.filter((product) => product.is_featured), [products]);
+  const bestSellers = useMemo(() => products.filter((product) => product.is_best_seller), [products]);
 
 useEffect(() => {
   let mounted = true;
@@ -154,27 +179,49 @@ useEffect(() => {
           <div className="absolute -right-10 -bottom-24 w-72 h-72 rounded-full bg-clay/30 blur-2xl" />
         </div>
       </section>
+      
+      <section className="max-w-7xl mx-auto px-6 pb-24 overflow-hidden">
+  <div className="text-center mb-9" data-aos="fade-up">
+    <p className="uppercase tracking-[0.2em] text-xs text-clay font-medium mb-2">
+      Shop by collection
+    </p>
 
-      <section className="max-w-7xl mx-auto px-6 pb-24">
-        <div className="text-center mb-9" data-aos="fade-up">
-          <p className="uppercase tracking-[0.2em] text-xs text-clay font-medium mb-2">Shop by collection</p>
-          <h2 className="font-display text-3xl">A little something for every ritual.</h2>
-        </div>
-        <div className="flex justify-between gap-4 overflow-x-auto pb-2">
-          {(categories.length ? categories : collections).map((collection, index) => (
-            <Link key={collection.slug} to={`/shop?category=${collection.slug}`} className="group shrink-0 text-center" data-aos="zoom-in" data-aos-delay={(index % 4) * 100}>
-              <img
-                src={collection.image_url || collection.image || "https://placehold.co/500x500/F7F3EA/2B241C?text=Cat"}
-                alt={collection.name}
-                className="w-28 h-28 sm:w-36 sm:h-36 object-cover rounded-full border-4 border-white shadow-sm group-hover:scale-105 transition-transform"
-              />
-              <p className="mt-3 font-medium text-sm">{collection.name}</p>
-            </Link>
-          ))}
-        </div>
-      </section>
+    <h2 className="font-display text-3xl">
+      A little something for every ritual.
+    </h2>
+  </div>
 
-      <section className="max-w-7xl mx-auto px-6 pb-24">
+  <div className="overflow-hidden">
+    <div className="category-scroll flex gap-8 w-max">
+      {[...(categories.length ? categories : collections), ...(categories.length ? categories : collections)].map(
+        (collection, index) => (
+          <Link
+            key={`${collection.slug}-${index}`}
+            to={`/shop?category=${collection.slug}`}
+            className="group shrink-0 text-center"
+            data-aos="zoom-in"
+            data-aos-delay={(index % 4) * 100}
+          >
+            <img
+              src={
+                collection.image_url ||
+                collection.image ||
+                "https://placehold.co/500x500/F7F3EA/2B241C?text=Cat"
+              }
+              alt={collection.name}
+              className="w-28 h-28 sm:w-36 sm:h-36 object-cover rounded-full border-4 border-white shadow-sm group-hover:scale-105 transition-transform"
+            />
+
+            <p className="mt-3 font-medium text-sm">
+              {collection.name}
+            </p>
+          </Link>
+        )
+      )}
+    </div>
+  </div>
+</section>
+       <section className="max-w-7xl mx-auto px-6 pb-24">
         <div className="flex items-end justify-between mb-8" data-aos="fade-up">
           <div>
             <p className="uppercase tracking-[0.2em] text-xs text-clay font-medium mb-2">This week's picks</p>
@@ -191,6 +238,10 @@ useEffect(() => {
           <p className="text-ink/40 text-sm">No featured products yet — add some from the admin dashboard.</p>
         )}
       </section>
+<ProductShelf eyebrow="Fresh from the harvest" title="New arrivals" products={newArrivals} />
+      <ProductShelf eyebrow="Curated favourites" title="Best sellers" products={bestSellers} />
+
+     
       <section className="relative py-16 sm:py-20 bg-[#f7f7f7] overflow-hidden">
 
         {/* Decorative hanging elements */}

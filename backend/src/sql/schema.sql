@@ -39,10 +39,16 @@ CREATE TABLE IF NOT EXISTS products (
   images        JSONB DEFAULT '[]',
   rating        NUMERIC(2,1) DEFAULT 0,
   rating_count  INTEGER DEFAULT 0,
+  is_new_arrival BOOLEAN NOT NULL DEFAULT false,
   is_featured   BOOLEAN DEFAULT false,
+  is_best_seller BOOLEAN NOT NULL DEFAULT false,
   is_active     BOOLEAN DEFAULT true,
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+ALTER TABLE products ADD COLUMN IF NOT EXISTS is_new_arrival BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS is_featured BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS is_best_seller BOOLEAN NOT NULL DEFAULT false;
 
 CREATE INDEX IF NOT EXISTS idx_products_name_trgm ON products USING gin (to_tsvector('english', name || ' ' || coalesce(description,'')));
 

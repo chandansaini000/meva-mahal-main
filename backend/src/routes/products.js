@@ -98,6 +98,8 @@ router.get("/", async (req, res) => {
     page = 1,
     limit = 12,
     featured,
+    newArrival,
+    bestSeller,
   } = req.query;
 
   const values = [];
@@ -128,6 +130,14 @@ router.get("/", async (req, res) => {
 
   if (featured === "true") {
     where.push("p.is_featured = true");
+  }
+
+  if (newArrival === "true") {
+    where.push("p.is_new_arrival = true");
+  }
+
+  if (bestSeller === "true") {
+    where.push("p.is_best_seller = true");
   }
 
   const sortMap = {
@@ -507,7 +517,9 @@ router.post(
         stock,
         unit,
         image_url,
+        is_new_arrival,
         is_featured,
+        is_best_seller,
         is_active,
       } = req.body;
 
@@ -546,11 +558,13 @@ router.post(
             unit,
             image_url,
             images,
+            is_new_arrival,
             is_featured,
+            is_best_seller,
             is_active
           )
           VALUES (
-            $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12
+            $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14
           )
           RETURNING *
         `,
@@ -565,7 +579,9 @@ router.post(
           unit,
           primaryImage,
           JSON.stringify(images),
+          is_new_arrival === "true",
           is_featured === "true",
+          is_best_seller === "true",
           is_active === undefined
             ? true
             : is_active === "true",
@@ -632,7 +648,9 @@ router.put(
         "stock",
         "unit",
         "image_url",
+        "is_new_arrival",
         "is_featured",
+        "is_best_seller",
         "is_active",
       ];
 
@@ -641,7 +659,9 @@ router.put(
           let value = req.body[field];
 
           if (
+            field === "is_new_arrival" ||
             field === "is_featured" ||
+            field === "is_best_seller" ||
             field === "is_active"
           ) {
             value = value === true || value === "true";
