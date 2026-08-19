@@ -212,7 +212,7 @@ export default function Shop() {
       {loading ? (
         <p className="text-ink/45 py-16">Loading the harvest…</p>
       ) : shown.length ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5">
           {shown.map((product, index) => (
             <ProductCard key={product.id} product={product} index={index} />
           ))}

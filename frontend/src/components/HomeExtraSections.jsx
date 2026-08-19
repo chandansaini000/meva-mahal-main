@@ -151,77 +151,108 @@ export default function HomeExtraSections() {
       {/* =====================================================
           WHY CHOOSE US
       ====================================================== */}
-      <section className="py-16 sm:py-20 bg-white" data-aos="fade-up">
+     <section
+  className="py-20 sm:py-12"
+  style={{
+    background:
+      "linear-gradient(110deg, #f7ecdc 0%, #f5f0e6 55%, #e8f0e2 100%)",
+  }}
+  data-aos="fade-up"
+>
+  <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
 
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
-          <div className="text-center mb-12">
-            <p className="uppercase tracking-[0.25em] text-[10px] sm:text-xs text-gold font-medium mb-3">
-              Why Mevamahal
-            </p>
+      {/* LEFT SIDE */}
+      <div className="max-w-lg">
 
-            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-ink">
-              Why Choose Us
-            </h2>
-          </div>
+        <p className="uppercase tracking-[0.25em] text-[10px] sm:text-xs text-[#b65d32] font-semibold mb-4">
+          Why Mevamahal
+        </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-7">
+        <h2 className="font-display text-4xl sm:text-5xl md:text-6xl leading-[1.05] text-ink">
+          Why Choose Us
+        </h2>
 
-            {whyChooseUs.map((item, index) => (
-              <div
-                key={index}
-                className="
-                  group
-                  bg-white
-                  rounded-2xl
-                  px-6
-                  py-8
-                  text-center
-                  shadow-sm
-                  hover:shadow-xl
-                  border
-                  border-transparent
-                  transition-all
-                  duration-300
-                  hover:-translate-y-1
-                "
-              >
+        <p className="mt-6 text-sm sm:text-base text-ink/60 leading-relaxed max-w-md">
+          We combine authentic Ayurvedic care, personalized guidance and
+          compassionate support to make every treatment journey comfortable
+          and meaningful.
+        </p>
 
-                <div
-                  className={`
-                    ${item.bg}
-                    w-20
-                    h-20
-                    mx-auto
-                    mb-6
-                    rounded-full
-                    flex
-                    items-center
-                    justify-center
-                    transition-transform
-                    duration-300
-                    group-hover:scale-110
-                  `}
-                >
-                  <div className="text-3xl text-amber-500">
-                    {item.icon}
-                  </div>
-                </div>
+      </div>
 
-                <h3 className="text-lg font-bold text-ink mb-3 leading-tight">
-                  {item.title}
-                </h3>
 
-                <p className="text-sm text-ink/60 leading-relaxed">
-                  {item.description}
-                </p>
+      {/* RIGHT SIDE - CARDS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
 
-              </div>
-            ))}
+        {whyChooseUs.slice(0, 4).map((item, index) => (
+  <div
+    key={index}
+    className="
+      group
+      bg-[#fbf8f1]
+      rounded-2xl
+      border
+      border-[#d8e2d5]
+      px-6
+      py-7
+      sm:py-8
+      min-h-[190px]
+      flex
+      flex-col
+      justify-center
+      transition-all
+      duration-300
+      hover:-translate-y-1
+      hover:shadow-xl
+    "
+  >
 
-          </div>
+    {/* ICON + TITLE */}
+    <div className="flex items-center gap-3 mb-4">
+
+      {/* ICON */}
+      <div
+        className={`
+          ${item.bg}
+          w-11
+          h-11
+          shrink-0
+          rounded-full
+          flex
+          items-center
+          justify-center
+          transition-transform
+          duration-300
+          group-hover:scale-110
+        `}
+      >
+        <div className="text-xl text-amber-500">
+          {item.icon}
         </div>
-      </section>
+      </div>
+
+      {/* TITLE */}
+      <h3 className="font-display text-xl sm:text-2xl font-bold text-ink leading-tight">
+        {item.title}
+      </h3>
+
+    </div>
+
+    {/* DESCRIPTION */}
+    <p className="text-sm text-ink/60 leading-relaxed">
+      {item.description}
+    </p>
+
+  </div>
+))}
+
+      </div>
+
+    </div>
+  </div>
+</section>
 
       {/* =====================================================
           FAQ

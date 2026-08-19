@@ -5,6 +5,61 @@ import { useCart } from "../context/CartContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { isValidMobile, isValidPincode, sanitizeDigits } from "../utils/validation.js";
 
+function CouponCard({ coupon, expanded, onToggle, onUse }) {
+  const discountType = coupon.discount_type === "percentage" ? "Percentage" : "Fixed amount";
+  const discount = coupon.discount_type === "percentage"
+    ? `${coupon.discount_value}% OFF`
+    : `₹${Number(coupon.discount_value).toFixed(0)} OFF`;
+
+  return (
+    <article className="coupon-card border border-line rounded-lg p-3 bg-white/70 flex flex-col min-w-0">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="text-left min-w-0"
+        aria-expanded={expanded}
+      >
+        <div className="flex items-start justify-between gap-3 min-w-0">
+          <p className="font-semibold text-sm tracking-wide break-words min-w-0">{coupon.code}</p>
+          <span className="text-xs font-semibold text-clay whitespace-nowrap">{discount}</span>
+        </div>
+        <div className="text-xs text-ink/55 mt-2 space-y-1">
+          {coupon.discount_type && coupon.discount_value !== null && (
+            <p>{discountType}: {coupon.discount_value}{coupon.discount_type === "percentage" ? "%" : "₹"}</p>
+          )}
+          {coupon.min_order_amount !== null && coupon.min_order_amount !== undefined && (
+            <p>Min order: ₹{Number(coupon.min_order_amount).toFixed(0)}</p>
+          )}
+          {coupon.max_discount_amount !== null && coupon.max_discount_amount !== undefined && (
+            <p>Max discount: ₹{Number(coupon.max_discount_amount).toFixed(0)}</p>
+          )}
+          {coupon.expires_at && (
+            <p>Valid until: {new Date(coupon.expires_at).toLocaleDateString()}</p>
+          )}
+        </div>
+      </button>
+      {expanded && coupon.description && (
+        <div className="mt-3 pt-3 border-t border-line text-xs text-ink/60 break-words">
+          <p className="font-medium text-ink/75 mb-1">Description:</p>
+          <p>{coupon.description}</p>
+        </div>
+      )}
+      {expanded && !coupon.description && (
+        <p className="mt-3 pt-3 border-t border-line text-xs text-ink/50">No additional details.</p>
+      )}
+      <div className="mt-3">
+        <button
+          type="button"
+          onClick={onUse}
+          className="w-full py-2 rounded-full bg-ink text-cream text-xs font-medium hover:bg-clayDark transition-colors"
+        >
+          Use Coupon
+        </button>
+      </div>
+    </article>
+  );
+}
+
 export default function Checkout() {
   const { items, total, refresh } = useCart();
   const { user } = useAuth();
@@ -28,6 +83,15 @@ export default function Checkout() {
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState("");
+  const [availableCoupons, setAvailableCoupons] = useState([]);
+  const [couponsOpen, setCouponsOpen] = useState(false);
+  const [expandedCouponId, setExpandedCouponId] = useState(null);
+
+  useEffect(() => {
+    api.get("/coupons/available")
+      .then(({ data }) => setAvailableCoupons(data.coupons || []))
+      .catch(() => setAvailableCoupons([]));
+  }, []);
 
   useEffect(() => {
     if (!user) return;
@@ -47,11 +111,10 @@ export default function Checkout() {
     setForm((current) => ({ ...current, [field]: value }));
   }
 
-  async function handleApplyCoupon(e) {
-    e.preventDefault();
+  async function applyCoupon(code) {
     setCouponError("");
 
-    if (!couponCode.trim()) {
+    if (!code.trim()) {
       setCouponError("Please enter a coupon code");
       return;
     }
@@ -59,7 +122,7 @@ export default function Checkout() {
     setCouponLoading(true);
     try {
       const { data } = await api.post("/coupons/validate", {
-        code: couponCode,
+        code,
         subtotal: total,
       });
       setAppliedCoupon({
@@ -68,6 +131,7 @@ export default function Checkout() {
         final_total: data.total,
       });
       setCouponCode("");
+      setCouponsOpen(false);
     } catch (err) {
       setCouponError(err.response?.data?.error || "Could not validate coupon");
     } finally {
@@ -75,10 +139,20 @@ export default function Checkout() {
     }
   }
 
+  async function handleApplyCoupon(e) {
+    e.preventDefault();
+    await applyCoupon(couponCode);
+  }
+
   function handleRemoveCoupon() {
     setAppliedCoupon(null);
     setCouponCode("");
     setCouponError("");
+  }
+
+  function handleUseCoupon(code) {
+    setCouponCode(code);
+    setCouponsOpen(false);
   }
 
   const finalTotal = appliedCoupon ? appliedCoupon.final_total : total;
@@ -231,7 +305,14 @@ export default function Checkout() {
                 </div>
               </label>
               {couponError && <p className="text-red-600 text-xs font-medium">{couponError}</p>}
-              <p className="text-xs text-gray-500">Try: WELCOME10</p>
+              <button
+                type="button"
+                onClick={() => setCouponsOpen((open) => !open)}
+                className="text-xs text-clay underline underline-offset-2 hover:text-clayDark"
+                aria-expanded={couponsOpen}
+              >
+                Coupons <span aria-hidden="true">{couponsOpen ? "▲" : "▼"}</span>
+              </button>
             </form>
           ) : (
             <div className="space-y-3 bg-gradient-to-br from-green-50 to-lime-50 border border-green-200 rounded-lg p-3">
@@ -252,6 +333,23 @@ export default function Checkout() {
               {appliedCoupon.description && (
                 <p className="text-xs text-gray-600">{appliedCoupon.description}</p>
               )}
+            </div>
+          )}
+          {!appliedCoupon && couponsOpen && (
+            <div className="mt-2 border border-line rounded-lg bg-cream/60 overflow-hidden">
+              <div className="coupon-list p-3 space-y-3 max-h-80 overflow-y-auto overflow-x-hidden">
+                {availableCoupons.length > 0 ? availableCoupons.map((coupon) => (
+                  <CouponCard
+                    key={coupon.id}
+                    coupon={coupon}
+                    expanded={expandedCouponId === coupon.id}
+                    onToggle={() => setExpandedCouponId((current) => current === coupon.id ? null : coupon.id)}
+                    onUse={() => handleUseCoupon(coupon.code)}
+                  />
+                )) : (
+                  <p className="text-sm text-ink/55 py-2">No coupons available</p>
+                )}
+              </div>
             </div>
           )}
         </div>

@@ -160,6 +160,25 @@ router.post("/coupons/validate", async (req, res) => {
   }
 });
 
+// Public checkout list. Only active, currently valid, and usable coupons are exposed.
+router.get("/coupons/available", async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT id, code, description, discount_type, discount_value,
+              min_order_amount, max_discount_amount, usage_limit, used_count, expires_at
+       FROM coupons
+       WHERE is_active = TRUE
+         AND (expires_at IS NULL OR expires_at >= NOW())
+         AND (usage_limit IS NULL OR used_count < usage_limit)
+       ORDER BY created_at DESC`
+    );
+    res.json({ coupons: rows });
+  } catch (error) {
+    console.error("Available coupon list error:", error);
+    res.status(500).json({ error: "Could not fetch available coupons" });
+  }
+});
+
 router.get("/coupons", requireAuth, requireAdmin, async (req, res) => {
   try {
     const { rows } = await pool.query("SELECT * FROM coupons ORDER BY created_at DESC");

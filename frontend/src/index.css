@@ -46,7 +46,7 @@ body {
 }
 
 .animate-review-slide {
-  animation: review-slide 30s linear infinite;
+  animation: review-slide 35s linear infinite;
 }
 
 .animate-review-slide:hover {

@@ -4,7 +4,14 @@ import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 import api from "../api/client.js";
 import ProductCard from "../components/ProductCard.jsx";
 import HomeExtraSections from "../components/HomeExtraSections.jsx";
-
+import {
+  getCachedProducts,
+  setCachedProducts,
+} from "../utils/productCache.js";
+import {
+  getCachedCategories,
+  setCachedCategories,
+} from "../utils/categoryCache.js";
 const collections = [
   { name: "Almonds", slug: "almonds", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Almonds.jpg?width=500" },
   { name: "Pistachios", slug: "pistachios", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Pistachio_Nuts_(Unsplash).jpg?width=500" },
@@ -25,7 +32,7 @@ function ProductShelf({ eyebrow, title, products }) {
         </div>
         <Link to="/shop" className="text-sm font-medium hover:text-clay">View all →</Link>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 gap-5">
         {products.slice(0, 8).map((product, index) => (
           <ProductCard key={product.id} product={product} index={index} />
         ))}
@@ -42,11 +49,75 @@ export default function Home() {
     const [reviews, setReviews] = useState([]);
   const [reviewsLoading, setReviewsLoading] = useState(true);
 const [reviewsError, setReviewsError] = useState("");
-  useEffect(() => {
-    api.get("/products?limit=100").then(({ data }) => setProducts(data.products || [])).catch(() => setProducts([]));
-    api.get("/site/settings").then(({ data }) => setSettings(data.settings)).catch(() => setSettings(null));
-    api.get("/products/categories").then(({ data }) => setCategories(data.categories)).catch(() => setCategories([]));
-  }, []);
+ useEffect(() => {
+  const loadProducts = async () => {
+    try {
+      // First check browser cache
+      const cachedProducts = getCachedProducts();
+
+      if (cachedProducts) {
+        console.log("Products loaded from browser cache");
+        setProducts(cachedProducts);
+        return;
+      }
+
+      // Cache not available/expired → API request
+      console.log("Products loaded from API");
+
+      const { data } = await api.get("/products?limit=100");
+
+      const productsData = Array.isArray(data?.products)
+        ? data.products
+        : [];
+
+      setProducts(productsData);
+
+      // Save latest products in browser cache
+      setCachedProducts(productsData);
+    } catch (error) {
+      console.error("Failed to load products:", error);
+      setProducts([]);
+    }
+  };
+
+  loadProducts();
+
+  // Keep existing settings request
+  api
+    .get("/site/settings")
+    .then(({ data }) => setSettings(data.settings))
+    .catch(() => setSettings(null));
+
+  // Keep existing categories request
+ const loadCategories = async () => {
+  try {
+    const cachedCategories = getCachedCategories();
+
+    if (cachedCategories) {
+      console.log("Categories loaded from browser cache");
+      setCategories(cachedCategories);
+      return;
+    }
+
+    console.log("Categories loaded from API");
+
+    const { data } = await api.get("/products/categories");
+
+    const categoriesData = Array.isArray(data?.categories)
+      ? data.categories
+      : [];
+
+    setCategories(categoriesData);
+
+    setCachedCategories(categoriesData);
+  } catch (error) {
+    console.error("Failed to load categories:", error);
+    setCategories([]);
+  }
+};
+
+loadCategories();
+}, []);
 
   const newArrivals = useMemo(() => products.filter((product) => product.is_new_arrival), [products]);
   const featured = useMemo(() => products.filter((product) => product.is_featured), [products]);
@@ -221,7 +292,7 @@ useEffect(() => {
     </div>
   </div>
 </section>
-       <section className="max-w-7xl mx-auto px-6 pb-24">
+       <section className="max-w-7xl mx-auto px-6 pb-24" >
         <div className="flex items-end justify-between mb-8" data-aos="fade-up">
           <div>
             <p className="uppercase tracking-[0.2em] text-xs text-clay font-medium mb-2">This week's picks</p>
@@ -229,7 +300,7 @@ useEffect(() => {
           </div>
           <Link to="/shop" className="text-sm font-medium hover:text-clay">View all →</Link>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 gap-5">
           {featured.map((p, index) => (
             <ProductCard key={p.id} product={p} index={index} />
           ))}
@@ -242,7 +313,10 @@ useEffect(() => {
       <ProductShelf eyebrow="Curated favourites" title="Best sellers" products={bestSellers} />
 
      
-      <section className="relative py-16 sm:py-20 bg-[#f7f7f7] overflow-hidden">
+      <section className="relative py-16 sm:py-10 overflow-hidden" style={{
+    background:
+      "linear-gradient(110deg, #f7ecdc 0%, #f5f0e6 55%, #e8f0e2 100%)",
+  }}>
 
         {/* Decorative hanging elements */}
         <div className="absolute top-0 left-[11%] hidden md:block">
@@ -263,7 +337,15 @@ useEffect(() => {
         </div>
 
         {/* Content */}
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-6">
+        
+        <section
+  className="py-20 sm:py-12"
+  style={{
+    background:
+      "linear-gradient(110deg, #f7ecdc 0%, #f5f0e6 55%, #e8f0e2 100%)",
+  }}
+>
+  <div className="relative max-w-6xl mx-auto px-5 sm:px-6">
           {/* Heading */}
           <div className="text-center mb-10 sm:mb-12">
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-medium tracking-tight text-ink">
@@ -373,6 +455,7 @@ useEffect(() => {
           )}
 
         </div>
+      </section>
       </section>
       <HomeExtraSections />
     </div>

@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "cors": "^2.8.6",
+    "nodemailer": "^9.0.5",
     "react-icon": "^1.0.0",
     "react-icons": "^5.7.0"
   }

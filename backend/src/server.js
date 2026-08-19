@@ -14,7 +14,7 @@ import adminRoutes from "./routes/admin.js";
 import userRoutes from "./routes/users.js";
 import siteRoutes from "./routes/site.js";
 import reviewRoutes from "./routes/reviews.js";
-
+import contactRoutes from "./routes/contact.js";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -36,19 +36,15 @@ app.disable("x-powered-by");
 
 app.use(
   cors({
-    origin: clientUrl,
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:4173",
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-
-// Handle CORS preflight requests
-app.options("*", cors({
-  origin: clientUrl,
-  credentials: true,
-}));
-
 // ------------------------------------
 // Body parsers
 // ------------------------------------
@@ -104,7 +100,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/site", siteRoutes);
 app.use("/api", reviewRoutes);
-
+app.use("/api", contactRoutes);
 app.get("/api/health", (req, res) => {
   res.json({
     ok: true,

@@ -19,7 +19,7 @@ export default function Footer() {
     alt="Meva Mahal"
     className="w-full h-full object-cover"
   />
-</div><h2 className="font-display text-3xl text-ink">Made with love,<br /><span className="text-clay">in India.</span></h2></div><div className="h-14 -mb-px overflow-hidden"><svg viewBox="0 0 100 20" preserveAspectRatio="none" className="w-full h-full"><path d="M0 0 Q50 20 100 0 V20 H0Z" fill="#2B241C" /></svg></div></div><div className="bg-ink"><div className="max-w-7xl mx-auto px-6 pt-10 pb-8"><div className="grid lg:grid-cols-[1.35fr_repeat(4,1fr)] gap-8"><div><div className="flex items-center gap-3"><img
+</div><h2 className="font-display text-3xl text-ink">Powered by<br /><span className="text-clay">Zentrixinfotech</span></h2></div><div className="h-14 -mb-px overflow-hidden"><svg viewBox="0 0 100 20" preserveAspectRatio="none" className="w-full h-full"><path d="M0 0 Q50 20 100 0 V20 H0Z" fill="#2B241C" /></svg></div></div><div className="bg-ink"><div className="max-w-7xl mx-auto px-6 pt-10 pb-8"><div className="grid lg:grid-cols-[1.35fr_repeat(4,1fr)] gap-8"><div><div className="flex items-center gap-3"><img
   src="/assets/mevamahal-logo.jpeg"
   alt="Logo"
   className="w-9 h-9 rounded-full border border-gold object-cover"

@@ -1,8 +1,16 @@
 import { Router } from "express";
 import { pool } from "../db.js";
 import { requireAuth, requireAdmin } from "../middleware/auth.js";
+import nodemailer from "nodemailer";
 
 const router = Router();
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DEFAULT_SITE_SETTINGS = {
   hero_eyebrow: "Small-batch since 1998",
@@ -30,17 +38,68 @@ router.post("/newsletter", async (req, res, next) => {
 
 router.post("/contact", async (req, res, next) => {
   const fields = ["name", "email", "subject", "message"];
-  const data = Object.fromEntries(fields.map((field) => [field, String(req.body[field] || "").trim()]));
-  if (fields.some((field) => !data[field]) || !emailPattern.test(data.email)) {
-    return res.status(400).json({ error: "Please complete every field with a valid email address" });
+
+  const data = Object.fromEntries(
+    fields.map((field) => [
+      field,
+      String(req.body[field] || "").trim(),
+    ])
+  );
+
+  if (
+    fields.some((field) => !data[field]) ||
+    !emailPattern.test(data.email)
+  ) {
+    return res.status(400).json({
+      error: "Please complete every field with a valid email address",
+    });
   }
+
   try {
+    // ------------------------------------
+    // Save message to database
+    // ------------------------------------
     await pool.query(
-      "INSERT INTO contact_messages (name, email, subject, message) VALUES ($1, $2, $3, $4)",
-      [data.name.slice(0, 120), data.email.slice(0, 180), data.subject.slice(0, 180), data.message.slice(0, 5000)]
+      `INSERT INTO contact_messages
+       (name, email, subject, message)
+       VALUES ($1, $2, $3, $4)`,
+      [
+        data.name.slice(0, 120),
+        data.email.slice(0, 180),
+        data.subject.slice(0, 180),
+        data.message.slice(0, 5000),
+      ]
     );
-    res.status(201).json({ ok: true });
-  } catch (error) { next(error); }
+
+    // ------------------------------------
+    // Send email to admin
+    // ------------------------------------
+    await transporter.sendMail({
+      from: process.env.SMTP_USER,
+      to: process.env.ADMIN_EMAIL,
+      replyTo: data.email,
+      subject: `Contact Message: ${data.subject}`,
+
+      text: `
+New Contact Message from MevaMahal
+
+Name: ${data.name}
+Email: ${data.email}
+Subject: ${data.subject}
+
+Message:
+${data.message}
+      `,
+    });
+
+    res.status(201).json({
+      ok: true,
+      message: "Message sent successfully",
+    });
+  } catch (error) {
+    console.error("Contact message error:", error);
+    next(error);
+  }
 });
 
 router.get("/settings", async (req, res) => {

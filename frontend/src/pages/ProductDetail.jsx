@@ -14,7 +14,10 @@ import { useCart } from "../context/CartContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import ProductCard from "../components/ProductCard.jsx";
 import { resolveImageSrc } from "../utils/image.js";
-
+import {
+  getCachedProductDetail,
+  setCachedProductDetail,
+} from "../utils/productDetailCache.js";
 function ReviewStars({ rating, interactive = false, value, onChange }) {
   return (
     <div className="flex gap-0.5 text-[#ffb400]" role={interactive ? "radiogroup" : undefined} aria-label={interactive ? "Choose a rating" : `${rating} out of 5 stars`}>
@@ -71,38 +74,51 @@ export default function ProductDetail() {
 
     async function loadProduct() {
       try {
-        const { data: productData } = await api.get(`/products/${slug}`);
+let productData = getCachedProductDetail(slug);
 
+if (productData) {
+  console.log("Product detail loaded from browser cache");
+} else {
+  console.log("Product detail loaded from API");
+
+  const response = await api.get(`/products/${slug}`);
+
+  productData = response.data;
+
+  setCachedProductDetail(slug, productData);
+}
         if (!mounted) return;
 
         setData(productData);
 
         const categorySlug = productData?.product?.category_slug;
 
-        if (categorySlug) {
-          try {
-            const { data: productsData } = await api.get("/products", {
-              params: {
-                category: categorySlug,
-                limit: 5,
-              },
-            });
+       if (categorySlug) {
+  try {
+    const { data: productsData } = await api.get("/products", {
+      params: {
+        category: categorySlug,
+        limit: 5,
+      },
+    });
 
-            if (!mounted) return;
+    if (!mounted) return;
 
-            setRelated(
-              (productsData.products || [])
-                .filter((item) => item.id !== productData.product.id)
-                .slice(0, 4)
-            );
-          } catch {
-            if (mounted) {
-              setRelated([]);
-            }
-          }
-        } else {
-          setRelated([]);
-        }
+    setRelated(
+      (productsData.products || [])
+        .filter((item) => item.id !== productData.product.id)
+        .slice(0, 4)
+    );
+  } catch (error) {
+    console.error("Could not load related products:", error);
+
+    if (mounted) {
+      setRelated([]);
+    }
+  }
+} else {
+  setRelated([]);
+}
       } catch (error) {
         console.error("Could not load product:", error);
 
@@ -643,7 +659,7 @@ export default function ProductDetail() {
                 Related products
               </h2>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5">
                 {related.map((item, index) => (
                   <ProductCard
                     key={item.id}
