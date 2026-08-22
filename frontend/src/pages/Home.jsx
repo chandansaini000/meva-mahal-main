@@ -193,7 +193,7 @@ useEffect(() => {
   const heroSecondaryLabel = settings?.hero_secondary_cta || "Our story";
   const heroPrimaryLink = settings?.hero_primary_link || "/shop";
   const heroSecondaryLink = settings?.hero_secondary_link || "/about";
-  const heroImage = settings?.hero_image || sliderImages[0] || "https://images.unsplash.com/photo-1508061253366-f7da158b6d46?w=900&q=80";
+  const heroImage = settings?.hero_image || sliderImages[0] || "https://res.cloudinary.com/zrhelpub/image/upload/v1786691364/mevamahal/products/mrjsub7agb45i3op7d1q.jpg";
   const heroBadge = settings?.hero_badge || "Loved by 12,000+ households";
 
   return (

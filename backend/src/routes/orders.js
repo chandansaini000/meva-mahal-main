@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { pool } from "../db.js";
 import { requireAuth, requireAdmin } from "../middleware/auth.js";
-import { validateMobile, validatePincode } from "../utils/validation.js";
+import { validateMobile, validateName, validatePincode } from "../utils/validation.js";
 
 const router = Router();
 
@@ -61,10 +61,13 @@ router.post("/", requireAuth, async (req, res) => {
   }
 
   if (!validateMobile(shipping_phone)) {
-    return res.status(400).json({ error: "Mobile number must contain exactly 10 digits." });
+    return res.status(400).json({ error: "Phone number must start with 6, 7, 8, or 9." });
   }
   if (!validatePincode(shipping_pincode)) {
-    return res.status(400).json({ error: "Pincode must contain exactly 6 digits." });
+    return res.status(400).json({ error: "PIN code must contain only 6 digits." });
+  }
+  if (!validateName(shipping_name)) {
+    return res.status(400).json({ error: "Name can only contain letters." });
   }
 
   const client = await pool.connect();

@@ -4,7 +4,7 @@ import { User, Package, MapPin, LogOut, LayoutDashboard } from "lucide-react";
 import api from "../api/client.js";
 import { useAuth } from "../context/AuthContext.jsx";
 import ReviewPopup from "../components/ReviewPopup.jsx";
-import { isValidMobile, isValidPincode, sanitizeDigits } from "../utils/validation.js";
+import { fieldClass, isValidMobile, isValidName, isValidPincode, sanitizeDigits, sanitizeName, VALIDATION_MESSAGES } from "../utils/validation.js";
 
 const TABS = [
   { id: "profile", label: "Profile", icon: User },
@@ -26,6 +26,7 @@ export default function Account() {
     pincode: user?.pincode || "",
   });
   const [saved, setSaved] = useState(false);
+  const [errors, setErrors] = useState({});
   const [reviewItems, setReviewItems] = useState(location.state?.orderReviewItems || null);
   const [reviewStage, setReviewStage] = useState(location.state?.orderReviewItems ? 1 : 2);
 
@@ -47,12 +48,18 @@ export default function Account() {
 
   async function handleSave(e) {
     e.preventDefault();
+    const next = {};
+    if (!isValidName(form.name)) next.name = VALIDATION_MESSAGES.name;
+    if (form.phone && !isValidMobile(form.phone)) next.phone = VALIDATION_MESSAGES.phone;
+    if (form.pincode && !isValidPincode(form.pincode)) next.pincode = VALIDATION_MESSAGES.pincode;
+    setErrors(next);
+    if (Object.keys(next).length) return;
     if (form.phone && !isValidMobile(form.phone)) {
-      setSaved("Mobile number must contain exactly 10 digits.");
+      setSaved(VALIDATION_MESSAGES.phone);
       return;
     }
     if (form.pincode && !isValidPincode(form.pincode)) {
-      setSaved("Pincode must contain exactly 6 digits.");
+      setSaved(VALIDATION_MESSAGES.pincode);
       return;
     }
     try {
@@ -105,8 +112,8 @@ export default function Account() {
           <form onSubmit={handleSave} className="space-y-4 max-w-md">
             <h2 className="font-display text-2xl mb-4">Profile details</h2>
             {saved && <p className={`${saved === true ? "text-moss" : "text-red-600"} text-sm`}>{saved === true ? "Saved!" : saved}</p>}
-            <input placeholder="Full name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="input" />
-            <input type="tel" inputMode="numeric" pattern="[0-9]{10}" maxLength={10} placeholder="Phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: sanitizeDigits(e.target.value).slice(0, 10) })} className="input" />
+            <div><input placeholder="Full name" value={form.name} onChange={(e) => { const raw = e.target.value; const value = sanitizeName(raw); setForm({ ...form, name: value }); setErrors({ ...errors, name: raw !== value ? VALIDATION_MESSAGES.name : value.trim() && isValidName(value) ? "" : VALIDATION_MESSAGES.name }); }} className={fieldClass("input", errors.name)} />{errors.name && <p className="text-red-600 text-xs mt-1">{errors.name}</p>}</div>
+            <div><input type="tel" inputMode="numeric" pattern="[0-9]{10}" maxLength={10} placeholder="Phone" value={form.phone} onChange={(e) => { const raw = e.target.value; const value = sanitizeDigits(raw).slice(0, 10); setForm({ ...form, phone: value }); setErrors({ ...errors, phone: raw !== value ? VALIDATION_MESSAGES.phone : value && !isValidMobile(value) ? VALIDATION_MESSAGES.phone : "" }); }} className={fieldClass("input", errors.phone)} />{errors.phone && <p className="text-red-600 text-xs mt-1">{errors.phone}</p>}</div>
             <button className="px-6 py-3 rounded-full bg-ink text-cream font-medium hover:bg-clayDark transition-colors">Save changes</button>
           </form>
         )}
@@ -141,7 +148,7 @@ export default function Account() {
               <input placeholder="City" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="input" />
               <input placeholder="State" value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })} className="input" />
             </div>
-            <input type="tel" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} placeholder="Pincode" value={form.pincode} onChange={(e) => setForm({ ...form, pincode: sanitizeDigits(e.target.value).slice(0, 6) })} className="input" />
+            <div><input type="tel" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} placeholder="Pincode" value={form.pincode} onChange={(e) => { const raw = e.target.value; const value = sanitizeDigits(raw).slice(0, 6); setForm({ ...form, pincode: value }); setErrors({ ...errors, pincode: raw !== value ? VALIDATION_MESSAGES.pincode : value && !isValidPincode(value) ? VALIDATION_MESSAGES.pincode : "" }); }} className={fieldClass("input", errors.pincode)} />{errors.pincode && <p className="text-red-600 text-xs mt-1">{errors.pincode}</p>}</div>
             <button className="px-6 py-3 rounded-full bg-ink text-cream font-medium hover:bg-clayDark transition-colors">Save address</button>
           </form>
         )}

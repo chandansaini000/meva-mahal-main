@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
+import { fieldClass, validateField } from "../utils/validation.js";
 
 export default function Login() {
   const { login, loginWithGoogle } = useAuth();
@@ -10,9 +11,13 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [emailError, setEmailError] = useState("");
 
   async function handleSubmit(e) {
     e.preventDefault();
+    const nextError = validateField("email", email);
+    setEmailError(nextError);
+    if (nextError) return;
     setLoading(true);
     setError("");
     try {
@@ -44,7 +49,7 @@ export default function Login() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && <p className="text-red-600 text-sm">{error}</p>}
-        <input required type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="input" />
+        <div><input required type="email" placeholder="Email" value={email} onChange={(e) => { setEmail(e.target.value); setEmailError(validateField("email", e.target.value)); }} className={fieldClass("input", emailError)} />{emailError && <p className="text-red-600 text-xs mt-1">{emailError}</p>}</div>
         <input required type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="input" />
         <button disabled={loading} className="w-full py-3 rounded-full bg-ink text-cream font-medium hover:bg-clayDark transition-colors disabled:opacity-50">
           {loading ? "Logging in…" : "Log in"}

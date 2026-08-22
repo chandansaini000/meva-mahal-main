@@ -4,6 +4,7 @@ import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { pool } from "../db.js";
 import { requireAuth, requireAdmin } from "../middleware/auth.js";
 import cloudinary from "../config/cloudinary.js";
+import { validateName } from "../utils/validation.js";
 
 const router = Router();
 
@@ -523,6 +524,10 @@ router.post(
         is_active,
       } = req.body;
 
+      if (!validateName(name)) return res.status(400).json({ error: "Name can only contain letters." });
+      if (!slug || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) return res.status(400).json({ error: "Please enter a valid product slug." });
+      if (price === undefined || Number(price) < 0 || stock === undefined || Number(stock) < 0) return res.status(400).json({ error: "Price and stock must be valid non-negative numbers." });
+
       let existingImages = [];
 
       if (req.body.existingImages) {
@@ -613,6 +618,9 @@ router.put(
   async (req, res) => {
     try {
       const productId = req.params.id;
+
+      if (req.body.name !== undefined && !validateName(req.body.name)) return res.status(400).json({ error: "Name can only contain letters." });
+      if (req.body.slug !== undefined && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(req.body.slug))) return res.status(400).json({ error: "Please enter a valid product slug." });
 
       const existingProduct = await pool.query(
         `

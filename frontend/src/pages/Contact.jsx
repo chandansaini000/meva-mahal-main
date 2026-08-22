@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import api from "../api/client.js";
+import { isValidEmail, isValidName, sanitizeName, VALIDATION_MESSAGES } from "../utils/validation.js";
 
 export default function Contact() {
   const [searchParams] = useSearchParams();
@@ -14,9 +15,16 @@ export default function Contact() {
 
   const [status, setStatus] = useState("");
   const [sending, setSending] = useState(false);
+  const [errors, setErrors] = useState({});
 
   async function submit(event) {
     event.preventDefault();
+
+    const next = {};
+    if (!isValidName(form.name)) next.name = VALIDATION_MESSAGES.name;
+    if (!isValidEmail(form.email)) next.email = VALIDATION_MESSAGES.email;
+    setErrors(next);
+    if (Object.keys(next).length) return;
 
     setStatus("");
     setSending(true);
@@ -44,82 +52,117 @@ export default function Contact() {
 
   function handleChange(event) {
     const { name, value } = event.target;
+    const nextValue = name === "name" ? sanitizeName(value) : value;
 
     setForm((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: nextValue,
     }));
+    if (name === "name") setErrors((prev) => ({ ...prev, name: value !== nextValue || (nextValue && !isValidName(nextValue)) ? VALIDATION_MESSAGES.name : "" }));
+    if (name === "email") setErrors((prev) => ({ ...prev, email: value && isValidEmail(value) ? "" : VALIDATION_MESSAGES.email }));
   }
 
   return (
-    <main className="relative overflow-hidden bg-[#faf8f3] text-ink">
+    <main
+      className="relative min-h-screen overflow-hidden text-ink"
+      style={{
+        background:
+          "linear-gradient(110deg, #f7ecdc 0%, #f5f0e6 55%, #e8f0e2 100%)",
+      }}
+    >
+      {/* =====================================================
+          DECORATIVE BACKGROUND
+      ====================================================== */}
 
-      {/* Decorative background */}
-      <div className="pointer-events-none absolute -top-40 -right-40 h-96 w-96 rounded-full bg-[#eadbc4]/40 blur-3xl" />
-      <div className="pointer-events-none absolute top-[45%] -left-40 h-96 w-96 rounded-full bg-[#dfe7d8]/40 blur-3xl" />
+      <div className="pointer-events-none absolute -top-40 -right-40 h-96 w-96 rounded-full bg-[#eadbc4]/35 blur-3xl" />
 
-      {/* -------------------------------- */}
-      {/* Hero */}
-      {/* -------------------------------- */}
-      <section className="relative mx-auto max-w-7xl px-6 pb-14 pt-16 sm:px-8 lg:px-12 lg:pb-20 lg:pt-12">
+      <div className="pointer-events-none absolute top-[42%] -left-40 h-96 w-96 rounded-full bg-[#dfe7d8]/40 blur-3xl" />
 
+      <div className="pointer-events-none absolute bottom-[-180px] right-[15%] h-96 w-96 rounded-full bg-[#eadbc4]/20 blur-3xl" />
+
+      {/* =====================================================
+          HERO
+      ====================================================== */}
+
+      <section className="relative mx-auto max-w-7xl px-5 pb-12 pt-14 sm:px-8 sm:pb-16 lg:px-12 lg:pb-20 lg:pt-16">
         <div className="max-w-3xl">
-          <div className="mb-5 flex items-center gap-3">
-            <span className="h-px w-10 bg-clay" />
+          {/* Eyebrow */}
 
-            <p className="text-xs font-medium uppercase tracking-[0.28em] text-clay">
+          <div className="mb-5 flex items-center gap-3">
+            <span className="h-px w-10 bg-[#b65d32]" />
+
+            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#b65d32]">
               Contact MevaMahal
             </p>
           </div>
 
-          <h1 className="font-display text-5xl leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl">
+          {/* Heading */}
+
+          <h1 className="font-display text-5xl leading-[0.95] tracking-[-0.03em] text-ink sm:text-6xl lg:text-7xl">
             How can
-            <span className="block text-clay">we help?</span>
+            <span className="block text-[#b65d32]">we help?</span>
           </h1>
 
-          <p className="mt-7 max-w-2xl text-base leading-7 text-ink/60 sm:text-lg">
+          {/* Description */}
+
+          <p className="mt-6 max-w-2xl text-[15px] leading-7 text-ink/60 sm:text-lg">
             Have a question about an order, a product, or a partnership?
             Send us a note and our team will get back to you shortly.
           </p>
         </div>
       </section>
 
-      {/* -------------------------------- */}
-      {/* Contact Section */}
-      {/* -------------------------------- */}
-      <section className="relative mx-auto max-w-7xl px-6 pb-20 sm:px-8 lg:px-12 lg:pb-28">
+      {/* =====================================================
+          CONTACT SECTION
+      ====================================================== */}
 
-        <div className="grid gap-8 lg:grid-cols-[0.85fr_1.4fr]">
+      <section className="relative mx-auto max-w-7xl px-5 pb-20 sm:px-8 lg:px-12 lg:pb-28">
+        <div className="grid gap-7 lg:grid-cols-[0.85fr_1.4fr] lg:gap-9">
+          {/* =================================================
+              LEFT INFORMATION CARD
+          ================================================== */}
 
-          {/* -------------------------------- */}
-          {/* Left Information Card */}
-          {/* -------------------------------- */}
-          <aside className="relative overflow-hidden rounded-[2rem] bg-[#24221d] p-8 text-[#f8f4eb] shadow-xl sm:p-10">
+          <aside className="relative min-h-[560px] overflow-hidden rounded-[1.75rem] bg-[#292721] p-7 text-[#f8f4eb] shadow-[0_25px_70px_rgba(40,30,20,0.18)] sm:p-9 lg:p-10">
+            {/* Decorative circles */}
 
-            {/* Decorative circle */}
-            <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full border border-white/10" />
-            <div className="absolute -bottom-24 -left-16 h-56 w-56 rounded-full border border-white/5" />
+            <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full border border-white/10" />
+
+            <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full border border-white/5" />
+
+            <div className="pointer-events-none absolute -bottom-24 -left-16 h-56 w-56 rounded-full border border-white/5" />
 
             <div className="relative z-10 flex h-full flex-col">
+              {/* Small heading */}
 
-              <p className="text-xs uppercase tracking-[0.25em] text-[#c9a77a]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#d9b98c]">
                 We'd love to hear from you
               </p>
 
-              <h2 className="mt-5 font-display text-3xl leading-tight sm:text-4xl">
-                Let’s start a conversation.
+              {/* Main heading */}
+
+              <h2 className="mt-4 font-display text-3xl leading-[1.1] tracking-tight sm:text-4xl">
+                Let’s start a
+                <span className="block text-[#d9b98c]">
+                  conversation.
+                </span>
               </h2>
 
-              <p className="mt-5 text-sm leading-7 text-white/60">
+              {/* Description */}
+
+              <p className="mt-5 max-w-sm text-sm leading-7 text-white/60">
                 Whether you need help choosing the right product or want to
                 explore a partnership, we're here to help.
               </p>
 
-              <div className="mt-10 space-y-7">
+              {/* =================================================
+                  CONTACT DETAILS
+              ================================================== */}
 
-                {/* Email */}
+              <div className="mt-10 space-y-7">
+                {/* EMAIL */}
+
                 <div className="flex gap-4">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.07] text-[#d9b98c]">
                     <svg
                       viewBox="0 0 24 24"
                       fill="none"
@@ -132,6 +175,7 @@ export default function Contact() {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       />
+
                       <path
                         d="m4 7 8 6 8-6"
                         strokeLinecap="round"
@@ -141,19 +185,20 @@ export default function Contact() {
                   </div>
 
                   <div>
-                    <p className="text-xs uppercase tracking-wider text-white/40">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/40">
                       Email
                     </p>
 
-                    <p className="mt-1 text-sm text-white/85">
+                    <p className="mt-1 text-sm leading-6 text-white/85">
                       We’ll reply as soon as possible.
                     </p>
                   </div>
                 </div>
 
-                {/* Support */}
+                {/* SUPPORT */}
+
                 <div className="flex gap-4">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.07] text-[#d9b98c]">
                     <svg
                       viewBox="0 0 24 24"
                       fill="none"
@@ -161,9 +206,8 @@ export default function Contact() {
                       stroke="currentColor"
                       strokeWidth="1.5"
                     >
-                      <path
-                        d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"
-                      />
+                      <path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" />
+
                       <path
                         d="M12 8v4l2.5 2.5"
                         strokeLinecap="round"
@@ -172,7 +216,7 @@ export default function Contact() {
                   </div>
 
                   <div>
-                    <p className="text-xs uppercase tracking-wider text-white/40">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/40">
                       Support
                     </p>
 
@@ -180,15 +224,16 @@ export default function Contact() {
                       Monday — Saturday
                     </p>
 
-                    <p className="text-sm text-white/50">
+                    <p className="mt-1 text-sm text-white/50">
                       10:00 AM — 6:00 PM
                     </p>
                   </div>
                 </div>
 
-                {/* Partnership */}
+                {/* PARTNERSHIPS */}
+
                 <div className="flex gap-4">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.07] text-[#d9b98c]">
                     <svg
                       viewBox="0 0 24 24"
                       fill="none"
@@ -200,6 +245,7 @@ export default function Contact() {
                         d="M7 12h10M12 7v10"
                         strokeLinecap="round"
                       />
+
                       <rect
                         x="4"
                         y="4"
@@ -211,7 +257,7 @@ export default function Contact() {
                   </div>
 
                   <div>
-                    <p className="text-xs uppercase tracking-wider text-white/40">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/40">
                       Partnerships
                     </p>
 
@@ -222,10 +268,13 @@ export default function Contact() {
                 </div>
               </div>
 
-              {/* Bottom quote */}
+              {/* =================================================
+                  BOTTOM QUOTE
+              ================================================== */}
+
               <div className="mt-auto hidden pt-12 sm:block">
                 <div className="border-t border-white/10 pt-6">
-                  <p className="font-display text-xl italic text-white/70">
+                  <p className="font-display text-xl italic leading-relaxed text-white/70">
                     “Good things are worth talking about.”
                   </p>
                 </div>
@@ -233,30 +282,42 @@ export default function Contact() {
             </div>
           </aside>
 
-          {/* -------------------------------- */}
-          {/* Form */}
-          {/* -------------------------------- */}
-          <div className="rounded-[2rem] border border-black/[0.06] bg-white/80 p-6 shadow-[0_20px_70px_rgba(40,30,20,0.08)] backdrop-blur sm:p-9 lg:p-11">
+          {/* =================================================
+              FORM CARD
+          ================================================== */}
+
+          <div className="rounded-[1.75rem] border border-white/70 bg-white/85 p-6 shadow-[0_25px_80px_rgba(50,40,25,0.10)] backdrop-blur-xl sm:p-9 lg:p-11">
+            {/* Form Header */}
 
             <div className="mb-8">
-              <p className="text-xs font-medium uppercase tracking-[0.2em] text-clay">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#b65d32]">
                 Send us a message
               </p>
 
-              <h2 className="mt-2 font-display text-3xl sm:text-4xl">
+              <h2 className="mt-2 font-display text-3xl tracking-tight text-ink sm:text-4xl">
                 We’re listening.
               </h2>
+
+              <p className="mt-3 max-w-lg text-sm leading-6 text-ink/50">
+                Share your question or message below and our team will get
+                back to you.
+              </p>
             </div>
 
-            <form onSubmit={submit} className="space-y-5">
+            {/* =================================================
+                FORM
+            ================================================== */}
 
-              {/* Name + Email */}
+            <form onSubmit={submit} className="space-y-5">
+              {/* NAME + EMAIL */}
+
               <div className="grid gap-5 sm:grid-cols-2">
+                {/* NAME */}
 
                 <div>
                   <label
                     htmlFor="contact-name"
-                    className="mb-2 block text-xs font-medium uppercase tracking-wider text-ink/60"
+                    className="mb-2.5 block text-[11px] font-semibold uppercase tracking-[0.16em] text-ink/55"
                   >
                     Your name
                   </label>
@@ -267,17 +328,20 @@ export default function Contact() {
                     name="name"
                     type="text"
                     autoComplete="name"
-                    className="w-full rounded-2xl border border-black/10 bg-[#faf9f6] px-4 py-3.5 text-sm outline-none transition placeholder:text-ink/30 focus:border-clay focus:bg-white focus:ring-4 focus:ring-clay/10"
+                    className={`w-full rounded-xl border border-black/[0.08] bg-[#faf9f6]/80 px-4 py-3.5 text-sm text-ink outline-none transition-all duration-200 placeholder:text-ink/30 hover:border-black/15 focus:border-[#b65d32] focus:bg-white focus:ring-4 focus:ring-[#b65d32]/10 ${errors.name ? "border-red-500" : ""}`}
                     placeholder="Enter your name"
                     value={form.name}
                     onChange={handleChange}
                   />
+                  {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name}</p>}
                 </div>
+
+                {/* EMAIL */}
 
                 <div>
                   <label
                     htmlFor="contact-email"
-                    className="mb-2 block text-xs font-medium uppercase tracking-wider text-ink/60"
+                    className="mb-2.5 block text-[11px] font-semibold uppercase tracking-[0.16em] text-ink/55"
                   >
                     Email address
                   </label>
@@ -288,20 +352,21 @@ export default function Contact() {
                     name="email"
                     type="email"
                     autoComplete="email"
-                    className="w-full rounded-2xl border border-black/10 bg-[#faf9f6] px-4 py-3.5 text-sm outline-none transition placeholder:text-ink/30 focus:border-clay focus:bg-white focus:ring-4 focus:ring-clay/10"
+                    className={`w-full rounded-xl border border-black/[0.08] bg-[#faf9f6]/80 px-4 py-3.5 text-sm text-ink outline-none transition-all duration-200 placeholder:text-ink/30 hover:border-black/15 focus:border-[#b65d32] focus:bg-white focus:ring-4 focus:ring-[#b65d32]/10 ${errors.email ? "border-red-500" : ""}`}
                     placeholder="you@example.com"
                     value={form.email}
                     onChange={handleChange}
                   />
+                  {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email}</p>}
                 </div>
-
               </div>
 
-              {/* Subject */}
+              {/* SUBJECT */}
+
               <div>
                 <label
                   htmlFor="contact-subject"
-                  className="mb-2 block text-xs font-medium uppercase tracking-wider text-ink/60"
+                  className="mb-2.5 block text-[11px] font-semibold uppercase tracking-[0.16em] text-ink/55"
                 >
                   Subject
                 </label>
@@ -311,18 +376,19 @@ export default function Contact() {
                   required
                   name="subject"
                   type="text"
-                  className="w-full rounded-2xl border border-black/10 bg-[#faf9f6] px-4 py-3.5 text-sm outline-none transition placeholder:text-ink/30 focus:border-clay focus:bg-white focus:ring-4 focus:ring-clay/10"
+                  className="w-full rounded-xl border border-black/[0.08] bg-[#faf9f6]/80 px-4 py-3.5 text-sm text-ink outline-none transition-all duration-200 placeholder:text-ink/30 hover:border-black/15 focus:border-[#b65d32] focus:bg-white focus:ring-4 focus:ring-[#b65d32]/10"
                   placeholder="What can we help you with?"
                   value={form.subject}
                   onChange={handleChange}
                 />
               </div>
 
-              {/* Message */}
+              {/* MESSAGE */}
+
               <div>
                 <label
                   htmlFor="contact-message"
-                  className="mb-2 block text-xs font-medium uppercase tracking-wider text-ink/60"
+                  className="mb-2.5 block text-[11px] font-semibold uppercase tracking-[0.16em] text-ink/55"
                 >
                   Your message
                 </label>
@@ -332,31 +398,37 @@ export default function Contact() {
                   required
                   name="message"
                   rows={7}
-                  className="w-full resize-none rounded-2xl border border-black/10 bg-[#faf9f6] px-4 py-3.5 text-sm leading-6 outline-none transition placeholder:text-ink/30 focus:border-clay focus:bg-white focus:ring-4 focus:ring-clay/10"
+                  className="w-full resize-none rounded-xl border border-black/[0.08] bg-[#faf9f6]/80 px-4 py-3.5 text-sm leading-6 text-ink outline-none transition-all duration-200 placeholder:text-ink/30 hover:border-black/15 focus:border-[#b65d32] focus:bg-white focus:ring-4 focus:ring-[#b65d32]/10"
                   placeholder="Tell us a little more..."
                   value={form.message}
                   onChange={handleChange}
                 />
               </div>
 
-              {/* Status */}
+              {/* =================================================
+                  STATUS
+              ================================================== */}
+
               {status && (
                 <div
-                  className={`rounded-2xl px-4 py-3 text-sm ${
+                  className={`rounded-xl border px-4 py-3.5 text-sm ${
                     status.startsWith("Thanks")
-                      ? "bg-[#e8f0e3] text-[#456044]"
-                      : "bg-red-50 text-red-700"
+                      ? "border-[#cbdcc5] bg-[#e8f0e3] text-[#456044]"
+                      : "border-red-100 bg-red-50 text-red-700"
                   }`}
                 >
                   {status}
                 </div>
               )}
 
-              {/* Submit */}
+              {/* =================================================
+                  SUBMIT BUTTON
+              ================================================== */}
+
               <button
                 type="submit"
                 disabled={sending}
-                className="group flex w-full items-center justify-center gap-3 rounded-full bg-ink px-6 py-4 text-sm font-medium text-cream shadow-lg transition duration-300 hover:-translate-y-0.5 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
+                className="group flex w-full items-center justify-center gap-3 rounded-xl bg-[#292721] px-6 py-4 text-sm font-semibold text-[#f8f4eb] shadow-[0_10px_30px_rgba(40,35,25,0.16)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#3a362e] hover:shadow-[0_15px_35px_rgba(40,35,25,0.20)] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {sending ? "Sending..." : "Send message"}
 
@@ -376,6 +448,8 @@ export default function Contact() {
                   </svg>
                 )}
               </button>
+
+              {/* Privacy */}
 
               <p className="text-center text-xs leading-5 text-ink/40">
                 We respect your privacy and will only use your information to

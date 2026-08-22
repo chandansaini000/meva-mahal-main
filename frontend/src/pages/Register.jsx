@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
+import { fieldClass, sanitizeName, validateField, VALIDATION_MESSAGES } from "../utils/validation.js";
 
 export default function Register() {
   const { register, loginWithGoogle } = useAuth();
@@ -8,9 +9,19 @@ export default function Register() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  function update(field, value) {
+    const nextValue = field === "name" ? sanitizeName(value) : value;
+    setForm((current) => ({ ...current, [field]: nextValue }));
+    if (field !== "password") setErrors((current) => ({ ...current, [field]: value !== nextValue ? VALIDATION_MESSAGES.name : validateField(field, nextValue) }));
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
+    const nextErrors = { name: validateField("name", form.name), email: validateField("email", form.email) };
+    setErrors(nextErrors);
+    if (Object.values(nextErrors).some(Boolean)) return;
     setLoading(true);
     setError("");
     try {
@@ -41,8 +52,8 @@ export default function Register() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && <p className="text-red-600 text-sm">{error}</p>}
-        <input required placeholder="Full name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="input" />
-        <input required type="email" placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="input" />
+        <div><input required placeholder="Full name" value={form.name} onChange={(e) => update("name", e.target.value)} className={fieldClass("input", errors.name)} />{errors.name && <p className="text-red-600 text-xs mt-1">{errors.name}</p>}</div>
+        <div><input required type="email" placeholder="Email" value={form.email} onChange={(e) => update("email", e.target.value)} className={fieldClass("input", errors.email)} />{errors.email && <p className="text-red-600 text-xs mt-1">{errors.email}</p>}</div>
         <input required type="password" placeholder="Password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="input" />
         <button disabled={loading} className="w-full py-3 rounded-full bg-ink text-cream font-medium hover:bg-clayDark transition-colors disabled:opacity-50">
           {loading ? "Creating…" : "Create account"}

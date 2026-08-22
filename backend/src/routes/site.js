@@ -2,6 +2,7 @@ import { Router } from "express";
 import { pool } from "../db.js";
 import { requireAuth, requireAdmin } from "../middleware/auth.js";
 import nodemailer from "nodemailer";
+import { validateEmail, validateName } from "../utils/validation.js";
 
 const router = Router();
 const transporter = nodemailer.createTransport({
@@ -20,10 +21,10 @@ const DEFAULT_SITE_SETTINGS = {
   hero_secondary_cta: "Our story",
   hero_primary_link: "/shop",
   hero_secondary_link: "/about",
-  hero_image: "https://images.unsplash.com/photo-1508061253366-f7da158b6d46?w=900&q=80",
+  hero_image: "https://res.cloudinary.com/zrhelpub/image/upload/v1786691364/mevamahal/products/mrjsub7agb45i3op7d1q.jpg",
   hero_badge: "Loved by 12,000+ households",
   slider_images: [
-    "https://images.unsplash.com/photo-1508061253366-f7da158b6d46?w=900&q=80"
+    "https://res.cloudinary.com/zrhelpub/image/upload/v1786691364/mevamahal/products/mrjsub7agb45i3op7d1q.jpg"
   ],
 };
 
@@ -48,10 +49,10 @@ router.post("/contact", async (req, res, next) => {
 
   if (
     fields.some((field) => !data[field]) ||
-    !emailPattern.test(data.email)
+    !validateEmail(data.email) || !validateName(data.name)
   ) {
     return res.status(400).json({
-      error: "Please complete every field with a valid email address",
+      error: !validateName(data.name) ? "Name can only contain letters." : "Please enter a valid email address.",
     });
   }
 

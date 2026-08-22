@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import api from "../api/client.js";
 import { useCart } from "../context/CartContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
-import { isValidMobile, isValidPincode, sanitizeDigits } from "../utils/validation.js";
+import { fieldClass, isValidMobile, isValidName, isValidPincode, sanitizeDigits, sanitizeName, VALIDATION_MESSAGES } from "../utils/validation.js";
 
 function CouponCard({ coupon, expanded, onToggle, onUse }) {
   const discountType = coupon.discount_type === "percentage" ? "Percentage" : "Fixed amount";
@@ -78,6 +78,7 @@ export default function Checkout() {
   });
   const [placing, setPlacing] = useState(false);
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState(null);
@@ -108,7 +109,16 @@ export default function Checkout() {
   }, [user]);
 
   function update(field, value) {
-    setForm((current) => ({ ...current, [field]: value }));
+    const isName = field === "shipping_name";
+    const isPhone = field === "shipping_phone";
+    const isPincode = field === "shipping_pincode";
+    const nextValue = isName ? sanitizeName(value) : isPhone || isPincode ? sanitizeDigits(value) : value;
+    setForm((current) => ({ ...current, [field]: nextValue.slice ? nextValue.slice(0, isPhone ? 10 : isPincode ? 6 : undefined) : nextValue }));
+    const type = isName ? "name" : isPhone ? "phone" : isPincode ? "pincode" : null;
+    if (type) {
+      const invalid = type === "name" ? !isValidName(nextValue) : type === "phone" ? !isValidMobile(nextValue) : !isValidPincode(nextValue);
+      setFieldErrors((current) => ({ ...current, [field]: value !== nextValue || (nextValue && invalid) ? VALIDATION_MESSAGES[type] : "" }));
+    }
   }
 
   async function applyCoupon(code) {
@@ -161,12 +171,19 @@ export default function Checkout() {
     e.preventDefault();
     setError("");
 
+    const nextErrors = {};
+    if (!isValidName(form.shipping_name)) nextErrors.shipping_name = VALIDATION_MESSAGES.name;
+    if (!isValidMobile(form.shipping_phone)) nextErrors.shipping_phone = VALIDATION_MESSAGES.phone;
+    if (!isValidPincode(form.shipping_pincode)) nextErrors.shipping_pincode = VALIDATION_MESSAGES.pincode;
+    setFieldErrors(nextErrors);
+    if (Object.keys(nextErrors).length) return;
+
     if (!isValidMobile(form.shipping_phone)) {
-      setError("Mobile number must contain exactly 10 digits.");
+      setError(VALIDATION_MESSAGES.phone);
       return;
     }
     if (!isValidPincode(form.shipping_pincode)) {
-      setError("Pincode must contain exactly 6 digits.");
+      setError(VALIDATION_MESSAGES.pincode);
       return;
     }
 
@@ -198,8 +215,9 @@ export default function Checkout() {
           placeholder="Full name"
           value={form.shipping_name}
           onChange={(e) => update("shipping_name", e.target.value)}
-          className="input"
+          className={fieldClass("input", fieldErrors.shipping_name)}
         />
+        {fieldErrors.shipping_name && <p className="text-red-600 text-xs -mt-2">{fieldErrors.shipping_name}</p>}
         <input
           required
           type="tel"
@@ -208,9 +226,10 @@ export default function Checkout() {
           maxLength={10}
           placeholder="Phone"
           value={form.shipping_phone}
-          onChange={(e) => update("shipping_phone", sanitizeDigits(e.target.value).slice(0, 10))}
-          className="input"
+          onChange={(e) => update("shipping_phone", e.target.value)}
+          className={fieldClass("input", fieldErrors.shipping_phone)}
         />
+        {fieldErrors.shipping_phone && <p className="text-red-600 text-xs -mt-2">{fieldErrors.shipping_phone}</p>}
         <input
           required
           placeholder="Address"
@@ -242,9 +261,10 @@ export default function Checkout() {
           maxLength={6}
           placeholder="Pincode"
           value={form.shipping_pincode}
-          onChange={(e) => update("shipping_pincode", sanitizeDigits(e.target.value).slice(0, 6))}
-          className="input"
+          onChange={(e) => update("shipping_pincode", e.target.value)}
+          className={fieldClass("input", fieldErrors.shipping_pincode)}
         />
+        {fieldErrors.shipping_pincode && <p className="text-red-600 text-xs -mt-2">{fieldErrors.shipping_pincode}</p>}
 
         <div className="border border-line rounded-xl2 p-4">
           <p className="font-medium mb-2 text-sm">Payment method</p>

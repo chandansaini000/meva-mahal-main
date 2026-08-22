@@ -33,6 +33,7 @@ import AdminLogin from "./pages/admin/Login.jsx";
 import AdminReviews from "./pages/admin/Reviews.jsx";
 import AdminCoupons from "./pages/admin/Coupons.jsx";
 import { useEffect } from "react";
+import ScrollToTop from "./components/ScrollToTop.jsx";
 import AOS from "aos";
 import "aos/dist/aos.css";
 export default function App() {
@@ -45,6 +46,8 @@ export default function App() {
     });
   }, []);
   return (
+    <>
+     <ScrollToTop />
     <Routes>
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
@@ -90,5 +93,6 @@ export default function App() {
         }
       />
     </Routes>
+    </>
   );
 }

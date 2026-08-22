@@ -3,6 +3,7 @@ import { Plus, Pencil, Trash2, X } from "lucide-react";
 import api from "../../api/client.js";
 import AdminLayout from "../../components/AdminLayout.jsx";
 import { DEFAULT_IMAGE_FALLBACK, resolveImageSrc } from "../../utils/image.js";
+import { isValidName, sanitizeName, VALIDATION_MESSAGES } from "../../utils/validation.js";
 
 const EMPTY = {
   name: "",
@@ -41,6 +42,7 @@ export default function AdminProducts() {
   const [removedImages, setRemovedImages] = useState([]);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const existingImages = asImageArray(form.images);
 
@@ -85,6 +87,11 @@ export default function AdminProducts() {
     e.preventDefault();
     setError("");
     if (saving) return;
+    if (!isValidName(form.name)) {
+      setFieldErrors({ name: VALIDATION_MESSAGES.name });
+      return;
+    }
+    setFieldErrors({});
     setSaving(true);
 
     try {
@@ -194,7 +201,7 @@ export default function AdminProducts() {
               </button>
             </div>
 
-            <input required placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="input" />
+            <div><input required placeholder="Name" value={form.name} onChange={(e) => { const raw = e.target.value; const value = sanitizeName(raw); setForm({ ...form, name: value }); setFieldErrors({ name: raw !== value || (value && !isValidName(value)) ? VALIDATION_MESSAGES.name : "" }); }} className={`input ${fieldErrors.name ? "border-red-500" : ""}`} />{fieldErrors.name && <p className="text-red-600 text-xs mt-1">{fieldErrors.name}</p>}</div>
             <input required placeholder="Slug (e.g. premium-almonds)" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} className="input" />
             <textarea placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="input" rows={3} />
 

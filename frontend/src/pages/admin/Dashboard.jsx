@@ -11,9 +11,9 @@ const DEFAULT_SETTINGS = {
   hero_secondary_cta: "Our story",
   hero_primary_link: "/shop",
   hero_secondary_link: "/about",
-  hero_image: "https://images.unsplash.com/photo-1508061253366-f7da158b6d46?w=900&q=80",
+  hero_image: "https://res.cloudinary.com/zrhelpub/image/upload/v1786691364/mevamahal/products/mrjsub7agb45i3op7d1q.jpg",
   hero_badge: "Loved by 12,000+ households",
-  slider_images: ["https://images.unsplash.com/photo-1508061253366-f7da158b6d46?w=900&q=80"],
+  slider_images: ["https://res.cloudinary.com/zrhelpub/image/upload/v1786691364/mevamahal/products/mrjsub7agb45i3op7d1q.jpg"],
 };
 
 export default function Dashboard() {

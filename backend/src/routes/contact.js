@@ -1,5 +1,6 @@
 import express from "express";
 import nodemailer from "nodemailer";
+import { validateEmail, validateName } from "../utils/validation.js";
 
 const router = express.Router();
 
@@ -20,6 +21,8 @@ router.post("/contact", async (req, res) => {
         error: "Name, email and message are required",
       });
     }
+    if (!validateName(name)) return res.status(400).json({ error: "Name can only contain letters." });
+    if (!validateEmail(email)) return res.status(400).json({ error: "Please enter a valid email address." });
 
     await transporter.sendMail({
       from: process.env.SMTP_USER,

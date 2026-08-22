@@ -4,6 +4,7 @@ import passport from "passport";
 import { pool } from "../db.js";
 import { signToken, requireAuth } from "../middleware/auth.js";
 import { googleOAuthEnabled } from "../config/passport.js";
+import { validateEmail, validateName } from "../utils/validation.js";
 
 const router = Router();
 
@@ -20,6 +21,8 @@ router.post("/register", async (req, res) => {
   if (!name || !email || !password) {
     return res.status(400).json({ error: "Name, email and password are required" });
   }
+  if (!validateName(name)) return res.status(400).json({ error: "Name can only contain letters." });
+  if (!validateEmail(email)) return res.status(400).json({ error: "Please enter a valid email address." });
   try {
     const existing = await pool.query("SELECT id FROM users WHERE email = $1", [email]);
     if (existing.rows.length) {
@@ -43,6 +46,7 @@ router.post("/register", async (req, res) => {
 // ---- Email/password login ----
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
+  if (!validateEmail(email)) return res.status(400).json({ error: "Please enter a valid email address." });
   try {
     const { rows } = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
     const user = rows[0];
